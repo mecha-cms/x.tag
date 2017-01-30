@@ -1,6 +1,6 @@
 <?php
 
-if ($__chops[0] === 'page') {
+if ($__chops[0] === 'page' && substr($__path, -3) !== '/d+' && strpos($__path, '/d:') === false) {
 
     function fn_tag_set($__path) {
         if (!Message::$x) {
