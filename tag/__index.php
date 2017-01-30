@@ -55,6 +55,6 @@ if ($__chops[0] === 'page') {
         echo '</p>';
     }
 
-    Hook::set('panel_main_editor', 'panel_f_query', 60.1);
+    Hook::set('panel.m.editor', 'panel_f_query', 60.1);
 
 }
