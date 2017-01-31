@@ -21,10 +21,11 @@ function fn_tag_url($s) {
 
 Hook::set('tag.url', 'fn_tag_url');
 
-function fn_page_query($content, $lot) {
+function fn_page_query_set($content, $lot) {
     $query = [];
-    if (empty($lot['kind'])) {
-        $lot['kind'] = e(File::open(Path::F($lot['path']) . DS . 'kind.data')->read([]));
+    $f = Path::F($lot['path']);
+    if (!array_key_exists('kind', $lot)) {
+        $lot['kind'] = e(File::open($f . DS . 'kind.data')->read([]));
     }
     foreach ($lot['kind'] as $v) {
         if ($slug = To::tag($v)) {
@@ -34,10 +35,17 @@ function fn_page_query($content, $lot) {
     return $query;
 }
 
+function fn_page_query($content, $lot) {
+    if (!$content || !array_key_exists('query', $lot) || !file_exists(Path::F($lot['path']) . DS . 'query.data')) {
+        return fn_page_query_set($content, $lot);
+    }
+    return $content;
+}
+
 function fn_page_tags($content, $lot) {
     global $url;
     $tags = [];
-    foreach (fn_page_query($content, $lot)[0] as $v) {
+    foreach (fn_page_query_set($content, $lot) as $v) {
         $tags[] = new Page(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
     }
     return $tags;

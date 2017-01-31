@@ -1,17 +1,17 @@
 <?php
 
-if ($__chops[0] === 'page' && substr($__path, -3) !== '/d+' && strpos($__path, '/d:') === false) {
+if ($__chops[0] === 'page' && substr($__path, -2) !== '/+' && strpos($__path, '/+/') === false) {
 
-    function fn_tag_set($__path) {
+    function fn_tags_set($__path) {
         if (!Message::$x) {
             global $language;
             // Create `kind.data` file…
-            if ($s = Request::post('query')) {
+            if ($s = Request::post('tags')) {
                 $s = explode(',', $s);
                 $__kinds = [];
                 if (count($s) > 12) {
                     Request::save('post');
-                    Message::error('max', [$language->tags, '<code>12</code>']);
+                    Message::error('max', [$language->tags, '<strong>12</strong>']);
                 } else {
                     foreach ($s as $v) {
                         $v = To::slug($v);
@@ -25,8 +25,10 @@ if ($__chops[0] === 'page' && substr($__path, -3) !== '/d+' && strpos($__path, '
                             }
                             ++$__o;
                             $__kinds[] = $__o;
-                            File::write($__o)->saveTo(TAG . DS . $v . DS . 'id.data', 0600);
-                            Page::data(['title' => $v])->saveTo(TAG . DS . $v . '.page', 0600);
+                            $f = TAG . DS . $v . DS;
+                            File::write(date(DATE_WISE))->saveTo($f . 'time.data', 0600);
+                            File::write($__o)->saveTo($f . 'id.data', 0600);
+                            Page::data(['title' => $v])->saveTo($f . '.page', 0600);
                             Message::info('create', $language->tag . ' <em>' . str_replace('-', ' ', $v) . '</em>');
                         }
                     }
@@ -40,21 +42,26 @@ if ($__chops[0] === 'page' && substr($__path, -3) !== '/d+' && strpos($__path, '
         }
     }
 
-    Hook::set('on.page.set', 'fn_tag_set');
+    Hook::set('on.page.set', 'fn_tags_set');
 
-    function panel_f_query() {
-        extract(Lot::get(null, []));
+    function panel_f_tags($__lot) {
+        extract($__lot);
         echo '<p class="f">';
-        echo '<label for="f-query">' . $language->tags . '</label>';
+        echo '<label for="f-tags">' . $language->tags . '</label>';
         echo ' <span>';
-        echo Form::text('query', implode(', ', $__page[1]->query), $language->f_query, [
+        $__tags = [];
+        foreach ($__page[1]->tags as $v) {
+            $__tags[] = str_replace('-', ' ', $v->slug);
+        }
+        echo Form::text('tags', implode(', ', (array) $__tags), $language->f_query, [
             'classes' => ['input', 'block', 'query'],
-            'id' => 'f-query'
+            'id' => 'f-tags'
         ]);
         echo '</span>';
         echo '</p>';
+        return $__lot;
     }
 
-    Hook::set('panel.m.editor', 'panel_f_query', 60.1);
+    Hook::set('panel.m.editor', 'panel_f_tags', 60.1);
 
 }
