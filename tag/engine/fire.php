@@ -13,7 +13,7 @@ function fn_tag_url($s) {
     if ($site->tag) { // → `blog/tag/tag-slug`
         $path = URL::I($path); // remove page offset from URL path
         $path = Path::D($path, 2);
-    } else if ($site->type === 'page') { // → `blog/page-slug`
+    } else if ($site->is === 'page') { // → `blog/page-slug`
         $path = Path::D($path);
     }
     return $url . ($path ? '/' . $path : "") . '/' . Extend::state(__DIR__, 'path', 'tag') . '/' . Path::N($s);
@@ -74,11 +74,11 @@ function fn_route_tag($path = "", $step = 1) {
                 2 => ['rel' => null]
             ],
            '-1' => [
-                1 => '&#x25C0;',
+                1 => Elevator::WEST,
                 2 => ['rel' => 'prev']
             ],
             '1' => [
-                1 => '&#x25B6;',
+                1 => Elevator::EAST,
                 2 => ['rel' => 'next']
             ]
         ]
@@ -113,7 +113,7 @@ function fn_route_tag($path = "", $step = 1) {
             Lot::set([
                 'pages' => $pages,
                 'page' => $page,
-                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->type)
+                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
             ]);
             Shield::attach('pages/' . $path);
         }
@@ -121,3 +121,7 @@ function fn_route_tag($path = "", $step = 1) {
 }
 
 Route::hook(['%*%/%i%', '%*%'], 'fn_route_tag');
+
+// Apply Markdown plugin to the tag file
+if (function_exists('fn_markdown_span')) Hook::set('tag.title', 'fn_markdown_span', 1);
+if (function_exists('fn_markdown')) Hook::set(['tag.description', 'tag.content'], 'fn_markdown', 1);
