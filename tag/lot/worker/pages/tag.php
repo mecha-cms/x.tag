@@ -12,7 +12,10 @@
 </aside>
 <main class="m">
   <section class="m-buttons">
-    <p><?php echo HTML::a('&#x2795; ' . $language->tag, $__state->path . '/::s::/' . $__path, false, ['classes' => ['button', 'set']]); ?></p>
+    <p>
+      <?php $__links = [HTML::a('&#x2795; ' . $language->tag, $__state->path . '/::s::/' . $__path, false, ['classes' => ['button', 'set']])]; ?>
+      <?php echo implode(' ', Hook::fire('panel.a.tags', [$__links])); ?>
+    </p>
   </section>
   <?php echo $__message; ?>
   <section class="m-pages">
@@ -33,7 +36,7 @@
             HTML::a($language->delete, str_replace('::g::', '::r::', $s) . HTTP::query(['token' => $__token]))
         ];
 
-        echo implode(' &#x00B7; ', $__links);
+        echo implode(' &#x00B7; ', Hook::fire('panel.a.tag', [$__links]));
 
         ?>
         </p>

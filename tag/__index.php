@@ -7,6 +7,7 @@ function fn_tags_set($__path) {
         if ($s = Request::post('tags')) {
             $s = explode(',', $s);
             $__kinds = [];
+            $__author = Request::post('author', false);
             if (count($s) > 12) {
                 Request::save('post');
                 Message::error('max', [$language->tags, '<strong>12</strong>']);
@@ -27,7 +28,10 @@ function fn_tags_set($__path) {
                         Hook::fire('on.tag.set', [$__path, $__o]);
                         File::write(date(DATE_WISE))->saveTo($f . DS . 'time.data', 0600);
                         File::write($__o)->saveTo($f . DS . 'id.data', 0600);
-                        Page::data(['title' => $v])->saveTo($f . '.page', 0600);
+                        Page::data([
+                            'title' => $v,
+                            'author' => $__author
+                        ])->saveTo($f . '.page', 0600);
                         Message::info('create', $language->tag . ' <em>' . str_replace('-', ' ', $v) . '</em>');
                     }
                 }
