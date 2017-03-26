@@ -22,12 +22,12 @@ if ($__is_pages) {
             });
         }
         foreach ($__files as $v) {
-            $__pages[0][] = Page::_($v, [], '__tag');
-            $__pages[1][] = Page::_($v, [], 'tag');
+            $__pages[0][] = new Page($v, [], '__tag');
+            $__pages[1][] = new Page($v, [], 'tag');
         }
         Lot::set([
             '__pages' => $__pages,
-            '__pager' => [Elevator::_($__files ?: [], $__chunk, $__step, $url . '/' . $__state->path . '/::g::/tag', [
+            '__pager' => [new Elevator($__files ?: [], $__chunk, $__step, $url . '/' . $__state->path . '/::g::/tag', [
                 'direction' => [
                    '-1' => 'previous',
                     '0' => false,
@@ -100,7 +100,7 @@ if ($__is_pages) {
             if (!$s = Request::post('time')) {
                 $s = date(DATE_WISE);
             } else {
-                $s = DateTime::createFromFormat('Y/m/d H:i:s', $s)->format(DATE_WISE);
+                $s = DateTime::createFromFormat('Y/m/d H:i:s', $s)->format();
             }
             File::write($s)->saveTo($dd . DS . 'time.data', 0600);
             // Create `sort.data` file…
@@ -129,13 +129,13 @@ if ($__is_pages) {
         $__folder . '.page'
     ])) {
         $__page = [
-            Page::_($__file, [], '__tag'),
-            Page::_($__file, [], 'tag')
+            new Page($__file, [], '__tag'),
+            new Page($__file, [], 'tag')
         ];
     } else {
         $__page = [
-            Page::_(null, [], '__tag'),
-            Page::_(null, [], 'tag')
+            new Page(null, [], '__tag'),
+            new Page(null, [], 'tag')
         ];
     }
     Lot::set('__page', $__page);
@@ -145,8 +145,8 @@ if ($__is_pages) {
             return Path::N($v) !== $s;
         });
         foreach (Anemon::eat($__files)->chunk($__chunk, 0) as $k => $v) {
-            $__kins[0][] = Page::_($v, [], '__tag');
-            $__kins[1][] = Page::_($v, [], 'tag');
+            $__kins[0][] = new Page($v, [], '__tag');
+            $__kins[1][] = new Page($v, [], 'tag');
         }
         $__is_kin_has_step = count($__files) > $__chunk;
         Lot::set([

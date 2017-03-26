@@ -46,7 +46,7 @@ function fn_page_tags($content, $lot) {
     global $url;
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
-        $tags[] = Page::_(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
+        $tags[] = new Page(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
     }
     return $tags;
 }
@@ -101,20 +101,20 @@ function fn_route_tag($path = "", $step = 1) {
                     return false;
                 });
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $v) {
-                    $pages[] = Page::_($r . DS . $v . '.page');
+                    $pages[] = new Page($r . DS . $v . '.page');
                 }
             }
             if (empty($pages)) {
                 Shield::abort();
             }
-            $page = Page::_(TAG . DS . $ss . '.page', [], 'tag');
-            Config::set('page.title', Anemon::_([$site->title, $language->tag, $page->title], ' &#x00B7; '));
+            $page = new Page(TAG . DS . $ss . '.page', [], 'tag');
+            Config::set('page.title', new Anemon([$site->title, $language->tag, $page->title], ' &#x00B7; '));
             Config::set('tag', $ss);
             $site->is = 'pages';
             Lot::set([
                 'pages' => $pages,
                 'page' => $page,
-                'pager' => Elevator::_($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
+                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
             ]);
             Shield::attach('pages/' . $path);
         }
