@@ -46,7 +46,7 @@ function fn_page_tags($content, $lot) {
     global $url;
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
-        $tags[] = new Page(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
+        $tags[] = Page::_(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
     }
     return $tags;
 }
@@ -101,20 +101,20 @@ function fn_route_tag($path = "", $step = 1) {
                     return false;
                 });
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $v) {
-                    $pages[] = new Page($r . DS . $v . '.page');
+                    $pages[] = Page::_($r . DS . $v . '.page');
                 }
             }
             if (empty($pages)) {
                 Shield::abort();
             }
-            $page = new Page(TAG . DS . $ss . '.page', [], 'tag');
-            Config::set('page.title', new Anemon([$site->title, $language->tag, $page->title], ' &#x00B7; '));
+            $page = Page::_(TAG . DS . $ss . '.page', [], 'tag');
+            Config::set('page.title', Anemon::_([$site->title, $language->tag, $page->title], ' &#x00B7; '));
             Config::set('tag', $ss);
             $site->is = 'pages';
             Lot::set([
                 'pages' => $pages,
                 'page' => $page,
-                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
+                'pager' => Elevator::_($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
             ]);
             Shield::attach('pages/' . $path);
         }
@@ -123,6 +123,6 @@ function fn_route_tag($path = "", $step = 1) {
 
 Route::hook(['%*%/%i%', '%*%'], 'fn_route_tag');
 
-// Apply Markdown plugin to the tag file
-if (function_exists('fn_markdown_span')) Hook::set('tag.title', 'fn_markdown_span', 1);
-if (function_exists('fn_markdown')) Hook::set(['tag.description', 'tag.content'], 'fn_markdown', 1);
+// Apply the block filter(s) of `page.content` to the `tag.content`
+if (function_exists('fn_block_x')) Hook::set('tag.content', 'fn_block_x', 0);
+if (function_exists('fn_block')) Hook::set('tag.content', 'fn_block', 1);
