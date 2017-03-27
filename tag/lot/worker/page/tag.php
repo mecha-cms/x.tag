@@ -39,7 +39,8 @@
     'classes' => ['input', 'block'],
     'id' => 'f-slug',
     'data' => ['slug-o' => 'title'],
-    'pattern' => '^[a-z\\d-]+$'
+    'pattern' => '^[a-z\\d-]+$',
+    'required' => true
 ]); ?>
         </span>
       </p>
