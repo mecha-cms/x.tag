@@ -2,7 +2,19 @@
   <aside class="s">
     <section class="s-author">
       <h3><?php echo $language->author; ?></h3>
-      <p><?php echo Form::text('author', $__page[0]->author); ?></p>
+      <p><?php
+
+$__authors = [];
+$__select = $__page[0]->author;
+foreach (g(ENGINE . DS . 'log' . DS . 'user', 'page') as $__v) {
+    $__v = new User(Path::N($__v));
+    $__k = $__v->key;
+    if ($__user->status !== 1 && $__k !== $__user->key) continue;
+    $__authors[User::ID . $__k] = $__v->author;
+}
+echo Form::select('author', $__user->status !== 1 && $__sgr !== 's' ? [User::ID . $__page[0]->author => $__page[1]->author] : $__authors, $__select, ['classes' => ['select', 'block'], 'id' => 'f-author']);
+
+?></p>
     </section>
     <?php if ($__kins[0]): ?>
     <section class="s-kin">
@@ -11,9 +23,7 @@
         <?php foreach ($__kins[0] as $k => $v): ?>
         <li><?php echo HTML::a($__kins[1][$k]->title, $v->url); ?></li>
         <?php endforeach; ?>
-        <?php if ($__is_kin_has_step): ?>
-        <li><?php echo HTML::a('&#x2026;', $__state->path . '/::g::/' . Path::D($__path) . '/2', false, ['title' => $language->more]); ?></li>
-        <?php endif; ?>
+        <li><?php echo HTML::a('&#x2795;', $__state->path . '/::s::/' . Path::D($__path), false, ['title' => $language->add]); ?><?php echo $__is_kin_has_step ? ' ' . HTML::a('&#x2026;', $__state->path . '/::g::/' . Path::D($__path) . '/2', false, ['title' => $language->more]) : ""; ?></li>
       </ul>
     </section>
     <?php endif; ?>
@@ -106,5 +116,21 @@ foreach ([
     </p>
     <?php echo Form::token(); ?>
   </main>
-  <aside class="s"></aside>
+  <aside class="s">
+    <section class="s-id">
+      <h3><?php echo $language->id; ?></h3>
+      <?php
+
+
+$__i = 0;
+foreach (glob(TAG . DS . '*' . DS . 'id.data', GLOB_NOSORT) as $v) {
+    $id = (int) file_get_contents($v);
+    if ($id > $__i) $__i = $id;
+}
+++$__i;
+
+      ?>
+      <p><?php echo Form::text('id', $__sgr === 's' ? $__i : $__page[0]->id, $__i, ['classes' => ['input', 'block'], 'id' => 'f-id', 'readonly' => true]); ?></p>
+    </section>
+  </aside>
 </form>

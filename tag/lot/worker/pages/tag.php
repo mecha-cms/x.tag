@@ -5,10 +5,12 @@
       <p><?php echo Form::text('q', Request::get('q', ""), null, ['classes' => ['input']]) . ' ' . Form::submit(null, null, $language->search, ['classes' => ['button']]); ?></p>
     </form>
   </section>
+  <?php if ($__pager[0]): ?>
   <section class="s-nav">
     <h3><?php echo $language->navigation; ?></h3>
     <p><?php echo $__pager[0]; ?></p>
   </section>
+  <?php endif; ?>
 </aside>
 <main class="m">
   <section class="m-buttons">

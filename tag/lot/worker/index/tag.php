@@ -51,6 +51,9 @@ if ($__is_pages) {
     }
 } else {
     if ($__is_post) {
+        if (Request::post('x') === 'trash') {
+            Guardian::kick(str_replace('::g::', '::r::', $url->current . HTTP::query(['token' => Request::post('token')])));
+        }
         $s = Path::N($__file);
         $ss = Request::post('slug');
         $x = Path::X($__file);
@@ -69,13 +72,16 @@ if ($__is_pages) {
             if (file_exists($dd . DS . $k . '.data')) continue;
             $headers[$k] = Request::post($k, $v);
         }
-        if ($s !== $ss && File::exist([
+        if ($__sgr === 's' && File::exist([
+            $__folder . DS . $ss . '.draft',
+            $__folder . DS . $ss . '.page'
+        ]) || $s !== $ss && File::exist([
             $dd . '.draft',
-            $dd . '.page',
-            $dd . '.archive'
+            $dd . '.page'
         ])) {
             Request::save('post');
             Message::error('exist', [$language->slug, '<em>' . $ss . '</em>']);
+            Guardian::kick($url->current);
         }
         $f = Path::D($__file) . DS . $ss . '.' . $xx;
         Hook::fire('on.tag.set', [$f]);
@@ -95,6 +101,10 @@ if ($__is_pages) {
                     $dd = $__file . DS . $ss; // New tag…
                 }
                 Page::data($headers)->saveTo($__folder . DS . $ss . '.' . $xx, 0600);
+            }
+            // Create `id.data` file…
+            if ($s = Request::post('id', "", false)) {
+                File::write($s)->saveTo($dd . DS . 'id.data', 0600);
             }
             // Create `time.data` file…
             if (!$s = Request::post('time')) {
@@ -120,6 +130,33 @@ if ($__is_pages) {
             }
         }
     } else {
+        if ($__sgr === 'r') {
+            if (!Request::get('token')) {
+                Shield::abort(PANEL_404);
+            }
+            if (!$__file = File::exist([
+                $__folder . '.draft',
+                $__folder . '.page',
+                $__folder . '.archive',
+                $__folder . '.trash'
+            ])) {
+                Shield::abort(PANEL_404);
+            }
+            $__k = str_replace('::r::', '::g::', $url->path);
+            $__name = Path::B($__folder);
+            Hook::fire('on.tag.reset', [$__file]);
+            if (Message::$x) {
+                Guardian::kick($__k);
+            }
+            if (Request::get('abort')) {
+                File::open($__folder . '.trash')->renameTo($__name . '.draft');
+                Message::success(To::sentence($language->restoreed));
+            } else {
+                File::open($__file)->renameTo($__name . '.trash');
+                Message::success(To::sentence($language->deleteed) . ' ' . HTML::a($language->restore, $url->path . HTTP::query(['abort' => 1]), false, ['classes' => ['right']]));
+            }
+            Guardian::kick(Path::D($__k) . '/1');
+        }
         if (($__file === $__folder || $__sgr === 's') && isset($__chops[1])) {
             Shield::abort(PANEL_404);
         }

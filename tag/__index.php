@@ -79,4 +79,21 @@ function fn_tags_f($__content) {
     return substr($__content, 0, $__index) . $__html . substr($__content, $__index);
 }
 
-Hook::set('shield.output', 'fn_tags_f');
+if ($__chops[0] === 'page') Hook::set('shield.output', 'fn_tags_f');
+
+// Delete trash…
+Hook::set('on.user.exit', function() {
+    foreach (File::explore(TAG, true, true) as $k => $v) {
+        if ($v === 0) continue;
+        $s = Path::F($k);
+        foreach (g($s, 'trash') as $v) {
+            File::open($v)->delete();
+        }
+        if (Path::X($k) === 'trash') {
+            File::open($k)->delete();
+            if (Is::D($s)) {
+                File::open($s)->delete();
+            }
+        }
+    }
+});
