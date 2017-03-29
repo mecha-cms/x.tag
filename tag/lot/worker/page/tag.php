@@ -2,7 +2,8 @@
   <aside class="s">
     <section class="s-author">
       <h3><?php echo $language->author; ?></h3>
-      <p><?php
+      <p>
+<?php
 
 $__authors = [];
 $__select = $__page[0]->author;
@@ -14,7 +15,8 @@ foreach (g(ENGINE . DS . 'log' . DS . 'user', 'page') as $__v) {
 }
 echo Form::select('author', $__user->status !== 1 && $__sgr !== 's' ? [User::ID . $__page[0]->author => $__page[1]->author] : $__authors, $__select, ['classes' => ['select', 'block'], 'id' => 'f-author']);
 
-?></p>
+?>
+      </p>
     </section>
     <?php if ($__kins[0]): ?>
     <section class="s-kin">

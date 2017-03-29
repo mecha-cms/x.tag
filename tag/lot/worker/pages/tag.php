@@ -15,7 +15,11 @@
 <main class="m">
   <section class="m-buttons">
     <p>
+      <?php if (Request::get('q')): ?>
+      <?php $__links = [HTML::a('&#x2716; ' . $language->doed, $__state->path . '/::g::/' . $__path . $__is_pages, false, ['classes' => ['button', 'reset']])]; ?>
+      <?php else: ?>
       <?php $__links = [HTML::a('&#x2795; ' . $language->tag, $__state->path . '/::s::/' . $__path, false, ['classes' => ['button', 'set']])]; ?>
+      <?php endif; ?>
       <?php echo implode(' ', Hook::fire('panel.a.tags', [$__links])); ?>
     </p>
   </section>
@@ -46,7 +50,11 @@
     </article>
     <?php endforeach; ?>
     <?php else: ?>
+    <?php if ($q = Request::get('q')): ?>
+    <p><?php echo $language->message_error_search('<em>' . $q . '</em>'); ?></p>
+    <?php else: ?>
     <p><?php echo $language->message_info_void($language->tags); ?></p>
+    <?php endif; ?>
     <?php endif; ?>
   </section>
 </main>
