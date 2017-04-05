@@ -126,3 +126,8 @@ Route::hook(['%*%/%i%', '%*%'], 'fn_route_tag');
 // Apply the block filter(s) of `page.content` to the `tag.content`
 if (function_exists('fn_block_x')) Hook::set('tag.content', 'fn_block_x', 0);
 if (function_exists('fn_block')) Hook::set('tag.content', 'fn_block', 1);
+
+// Apply the Markdown filter of `page.title` to the `comment.title` (if any)
+// Apply the Markdown filter of `page.content` to the `comment.content`
+if (function_exists('fn_markdown_span')) Hook::set('comment.title', 'fn_markdown_span', 2);
+if (function_exists('fn_markdown')) Hook::set(['comment.description', 'comment.content'], 'fn_markdown', 2);
