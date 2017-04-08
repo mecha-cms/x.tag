@@ -1,6 +1,6 @@
 ---
 title: Tags
-description: Adds `query` and `tags` property to the page based on the `kind` property.
+description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.0.0
