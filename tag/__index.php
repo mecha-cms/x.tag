@@ -1,6 +1,6 @@
 <?php
 
-function fn_tags_set($__path) {
+function fn_tags_set($__file) {
     if (!Message::$x) {
         global $language;
         // Create `kind.data` file…
@@ -25,7 +25,7 @@ function fn_tags_set($__path) {
                         ++$__o;
                         $__kinds[] = $__o;
                         $f = TAG . DS . $v;
-                        Hook::fire('on.tag.set', [$__path, $__o]);
+                        Hook::fire('on.tag.set', [$__file, $__o]);
                         File::write(date(DATE_WISE))->saveTo($f . DS . 'time.data', 0600);
                         File::write($__o)->saveTo($f . DS . 'id.data', 0600);
                         Page::data([
@@ -37,16 +37,17 @@ function fn_tags_set($__path) {
                 }
                 $__kinds = array_unique($__kinds);
                 sort($__kinds);
-                Hook::fire('on.tags.set', [$__path, $__kinds]);
+                Hook::fire('on.tags.set', [$__file, $__kinds]);
                 if (!Message::$x) {
-                    File::write(To::json($__kinds))->saveTo(Path::F($__path) . DS . 'kind.data', 0600);
+                    File::write(To::json($__kinds))->saveTo(Path::F($__file) . DS . 'kind.data', 0600);
                 }
             }
         } else {
-            Hook::fire('on.tags.reset', [$__path, []]);
-            File::open(Path::F($__path) . DS . 'kind.data')->delete();
+            Hook::fire('on.tags.reset', [$__file, []]);
+            File::open(Path::F($__file) . DS . 'kind.data')->delete();
         }
     }
+    return $__file;
 }
 
 Hook::set('on.page.set', 'fn_tags_set');
