@@ -85,6 +85,13 @@ function fn_route_tag($path = "", $step = 1) {
     ];
     // Get tag ID from tag slug…
     if (($id = From::tag($ss)) !== false) {
+        // Placeholder…
+        Lot::set([
+            'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
+            'page' => new Page
+        ]);
+        // --ditto
+        Config::set('page.title', new Anemon([$site->title, $language->tag], ' &#x00B7; '));
         if ($sss === $state['path']) {
             $pages = [];
             $path = implode('/', $chops);
@@ -105,11 +112,10 @@ function fn_route_tag($path = "", $step = 1) {
                 }
             }
             if (empty($pages)) {
+                $site->is = '404';
                 Shield::abort();
             }
             $page = new Page(TAG . DS . $ss . '.page', [], 'tag');
-            Config::set('page.title', new Anemon([$site->title, $language->tag, $page->title], ' &#x00B7; '));
-            Config::set('tag', $ss);
             $site->is = 'pages';
             Lot::set([
                 'pages' => $pages,
@@ -127,7 +133,10 @@ Route::hook(['%*%/%i%', '%*%'], 'fn_route_tag');
 if (function_exists('fn_block_x')) Hook::set('tag.content', 'fn_block_x', 0);
 if (function_exists('fn_block')) Hook::set('tag.content', 'fn_block', 1);
 
-// Apply the Markdown filter of `page.title` to the `comment.title` (if any)
-// Apply the Markdown filter of `page.content` to the `comment.content`
-if (function_exists('fn_markdown_span')) Hook::set('comment.title', 'fn_markdown_span', 2);
-if (function_exists('fn_markdown')) Hook::set(['comment.description', 'comment.content'], 'fn_markdown', 2);
+// Apply the Markdown filter of `page.title` to the `tag.title` (if any)
+// Apply the Markdown filter of `page.content` to the `tag.content`
+if (function_exists('fn_markdown_span')) Hook::set('tag.title', 'fn_markdown_span', 2);
+if (function_exists('fn_markdown')) Hook::set(['tag.description', 'tag.content'], 'fn_markdown', 2);
+
+// Apply the user filter(s) of `page.author` to the `tag.author`
+if (function_exists('fn_user')) Hook::set('tag.author', 'fn_user', 1);
