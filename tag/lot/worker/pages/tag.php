@@ -1,10 +1,5 @@
 <aside class="s">
-  <section class="s-search">
-    <h3><?php echo $language->search; ?></h3>
-    <form id="form.s.search" class="search" action="<?php echo $url->current; ?>" method="get">
-      <p><?php echo Form::text('q', Request::get('q', ""), null, ['classes' => ['input']]) . ' ' . Form::submit(null, null, $language->search, ['classes' => ['button']]); ?></p>
-    </form>
-  </section>
+  <?php include PANEL . DS . 'lot' . DS . 'worker' . DS . 'pages' . DS . '-search.php'; ?>
   <?php if ($__pager[0]): ?>
   <section class="s-nav">
     <h3><?php echo $language->navigation; ?></h3>
@@ -13,36 +8,36 @@
   <?php endif; ?>
 </aside>
 <main class="m">
-  <section class="m-buttons">
+  <section class="buttons">
     <p>
       <?php if (Request::get('q')): ?>
-      <?php $__links = [HTML::a('&#x2716; ' . $language->doed, $__state->path . '/::g::/' . $__path . $__is_pages, false, ['classes' => ['button', 'reset']])]; ?>
+      <?php $__links = [HTML::a('&#x2716; ' . $language->doed, $__state->path . '/::g::/' . $__path . $__is_has_step, false, ['classes' => ['button', 'reset']])]; ?>
       <?php else: ?>
-      <?php $__links = [HTML::a('&#x2795; ' . $language->tag, $__state->path . '/::s::/' . $__path, false, ['classes' => ['button', 'set']])]; ?>
+      <?php $__links = [HTML::a('&#x2795; ' . $language->{$__chops[0]}, $__state->path . '/::s::/' . $__path, false, ['classes' => ['button', 'set']])]; ?>
       <?php endif; ?>
-      <?php echo implode(' ', Hook::fire('panel.a.tags', [$__links])); ?>
+      <?php echo implode(' ', Hook::fire('panel.a.' . $__chops[0] . 's', [$__links])); ?>
     </p>
   </section>
   <?php echo $__message; ?>
-  <section class="m-pages">
+  <section class="pages">
     <?php if ($__pages[0]): ?>
-    <?php foreach ($__pages[1] as $k => $v): ?>
-    <?php $s = $__pages[0][$k]->url; ?>
-    <article class="page <?php echo 'on-' . $v->state; ?><?php if ($config->shield === $v->id): ?> is-current<?php endif; ?>" id="page-<?php echo $v->id; ?>">
+    <?php foreach ($__pages[1] as $__k => $__v): ?>
+    <?php $__s = $__pages[0][$__k]->url; ?>
+    <article class="page <?php echo 'on-' . $__v->state; ?><?php if ($config->shield === $__v->id): ?> is-current<?php endif; ?>" id="page-<?php echo $__v->id; ?>">
       <header>
-        <h3><?php echo $v->title; ?></h3>
+        <h3><?php echo $__v->title; ?></h3>
       </header>
-      <section><p><?php echo To::snippet($v->description, true, $__state->snippet); ?></p></section>
+      <section><p><?php echo To::snippet($__v->description, true, $__state->snippet); ?></p></section>
       <footer>
         <p>
         <?php
 
         $__links = [
-            HTML::a($language->edit, $s),
-            HTML::a($language->delete, str_replace('::g::', '::r::', $s) . HTTP::query(['token' => $__token]))
+            HTML::a($language->edit, $__s),
+            HTML::a($language->delete, str_replace('::g::', '::r::', $__s) . HTTP::query(['token' => $__token]))
         ];
 
-        echo implode(' &#x00B7; ', Hook::fire('panel.a.tag', [$__links]));
+        echo implode(' &#x00B7; ', Hook::fire('panel.a.' . $__chops[0], [$__links]));
 
         ?>
         </p>
@@ -50,10 +45,10 @@
     </article>
     <?php endforeach; ?>
     <?php else: ?>
-    <?php if ($q = Request::get('q')): ?>
-    <p><?php echo $language->message_error_search('<em>' . $q . '</em>'); ?></p>
+    <?php if ($__q = Request::get('q')): ?>
+    <p><?php echo $language->message_error_search('<em>' . $__q . '</em>'); ?></p>
     <?php else: ?>
-    <p><?php echo $language->message_info_void($language->tags); ?></p>
+    <p><?php echo $language->message_info_void($language->{$__chops[0] . 's'}); ?></p>
     <?php endif; ?>
     <?php endif; ?>
   </section>

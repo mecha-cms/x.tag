@@ -25,7 +25,7 @@ echo Form::select('author', $__user->status !== 1 && $__sgr !== 's' ? [User::ID 
         <?php foreach ($__kins[0] as $k => $v): ?>
         <li><?php echo HTML::a($__kins[1][$k]->title, $v->url); ?></li>
         <?php endforeach; ?>
-        <li><?php echo HTML::a('&#x2795;', $__state->path . '/::s::/' . Path::D($__path), false, ['title' => $language->add]); ?><?php echo $__is_kin_has_step ? ' ' . HTML::a('&#x2026;', $__state->path . '/::g::/' . Path::D($__path) . '/2', false, ['title' => $language->more]) : ""; ?></li>
+        <li><?php echo HTML::a('&#x2795;', $__state->path . '/::s::/' . Path::D($__path), false, ['title' => $language->add]); ?><?php echo $__is_has_step_kin ? ' ' . HTML::a('&#x22EF;', $__state->path . '/::g::/' . Path::D($__path) . '/2', false, ['title' => $language->more]) : ""; ?></li>
       </ul>
     </section>
     <?php endif; ?>
@@ -96,7 +96,7 @@ $__x = $__page[0]->state;
 
 if ($__sgr !== 's') {
     echo Form::submit('x', $__x, $language->update, [
-        'classes' => ['button', 'x-' . $__x],
+        'classes' => ['button', 'set', 'x-' . $__x],
         'id' => 'f-state:' . $__x
     ]);
 }
@@ -104,30 +104,29 @@ if ($__sgr !== 's') {
 foreach ([
     'page' => $language->publish,
     'draft' => $language->save,
-    'trash' => $language->delete
-] as $k => $v) {
-    if ($__x === $k) continue;
-    echo ' ' . Form::submit('x', $k, $v, [
-        'classes' => ['button', 'x-' . $k],
-        'id' => 'f-state:' . $k
+    'trash' => $__sgr === 's' ? false : $language->delete
+] as $__k => $__v) {
+    if (!$__v || $__x === $__k) continue;
+    echo ' ' . Form::submit('x', $__k, $__v, [
+        'classes' => ['button', 'set', 'x-' . $__k],
+        'id' => 'f-state:' . $__k
     ]);
 }
 
 ?>
       </span>
     </p>
-    <?php echo Form::token(); ?>
+    <?php echo Form::hidden('token', $__token); ?>
   </main>
   <aside class="s">
     <section class="s-id">
       <h3><?php echo $language->id; ?></h3>
       <?php
 
-
 $__i = 0;
-foreach (glob(TAG . DS . '*' . DS . 'id.data', GLOB_NOSORT) as $v) {
-    $id = (int) file_get_contents($v);
-    if ($id > $__i) $__i = $id;
+foreach (glob(TAG . DS . '*' . DS . 'id.data', GLOB_NOSORT) as $__v) {
+    $__id = (int) file_get_contents($__v);
+    if ($__id > $__i) $__i = $__id;
 }
 ++$__i;
 
