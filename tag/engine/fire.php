@@ -118,6 +118,9 @@ function fn_route_tag($path = "", $step = 1) {
             $page = new Page(TAG . DS . $ss . '.page', [], 'tag');
             $site->is = 'pages';
             $site->tag = $page;
+            if ($page->description) {
+                $site->description = $page->description;
+            }
             Config::set('page.title', new Anemon([$site->title, $language->tag, $page->title], ' &#x00B7; '));
             Lot::set([
                 'pages' => $pages,
