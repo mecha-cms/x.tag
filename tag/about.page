@@ -3,7 +3,7 @@ title: Tags
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.2
+version: 1.2.0
 ...
 
 This extension enables tags feature on any pages by utilizing the `kind` property value as the tag ID. This extension also adds a new route definition like `http://localhost/blog/tag/slug` on every pages to make it possible to list all pages in the current folder by tags.
