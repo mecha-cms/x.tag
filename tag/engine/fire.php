@@ -16,7 +16,7 @@ function fn_tag_url($s) {
     } else if ($site->is === 'page') { // → `blog/page-slug`
         $path = Path::D($path);
     }
-    return $url . ($path ? '/' . $path : "") . '/' . Extend::state(__DIR__, 'path', 'tag') . '/' . Path::N($s);
+    return $url . ($path ? '/' . $path : "") . '/' . Extend::state(__DIR__, 'path') . '/' . Path::N($s);
 }
 
 Hook::set('tag.url', 'fn_tag_url');
