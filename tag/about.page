@@ -4,14 +4,9 @@ description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.2.0
+dependency: {"extension":["page"]}
 ...
 
 This extension enables tags feature on any pages by utilizing the `kind` property value as the tag ID. This extension also adds a new route definition like `http://localhost/blog/tag/slug` on every pages to make it possible to list all pages in the current folder by tags.
-
-### Dependency
-
-#### Extension
-
- - Page
 
 <!-- block:donate -->
