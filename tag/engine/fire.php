@@ -16,7 +16,7 @@ function fn_tag_url($s) {
     } else if ($site->is === 'page') { // → `blog/page-slug`
         $path = Path::D($path);
     }
-    return $url . ($path ? '/' . $path : "") . '/' . Extend::state(__DIR__, 'path') . '/' . Path::N($s);
+    return $url . ($path ? '/' . $path : "") . '/' . Extend::state(Path::D(__DIR__), 'path') . '/' . Path::N($s);
 }
 
 Hook::set('tag.url', 'fn_tag_url');
@@ -121,7 +121,7 @@ function fn_route_tag($path = "", $step = 1) {
             if ($page->description) {
                 $site->description = $page->description;
             }
-            Config::set('page.title', new Anemon([$site->title, $language->tag, $page->title], ' &#x00B7; '));
+            Config::set('page.title', new Anemon([$page->title, $language->tag, $site->title], ' &#x00B7; '));
             Lot::set([
                 'pages' => $pages,
                 'page' => $page,

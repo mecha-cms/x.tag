@@ -3,7 +3,7 @@ title: Tags
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.2.0
+version: 1.2.2
 dependency: {"extension":["page"]}
 ...
 
