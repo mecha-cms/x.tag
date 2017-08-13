@@ -46,7 +46,8 @@ function fn_page_tags($content, $lot) {
     global $url;
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
-        $tags[] = new Page(TAG . DS . str_replace(' ', '-', $v) . '.page', [], 'tag');
+        $v = str_replace(' ', '-', $v);
+        $tags[$v] = new Page(TAG . DS . $v . '.page', [], 'tag');
     }
     return $tags;
 }
