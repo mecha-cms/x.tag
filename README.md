@@ -1,2 +1,2 @@
-Tags Extension for Mecha
-========================
+Tag Extension for Mecha
+=======================
