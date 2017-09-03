@@ -47,13 +47,13 @@ function fn_page_tags($content, $lot) {
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
         $v = str_replace(' ', '-', $v);
-        $tags[$v] = new Page(TAG . DS . $v . '.page', [], 'tag');
+        $tags[$v] = new Page(TAG . DS . $v . '.page', [], ['*', 'tag']);
     }
     return $tags;
 }
 
-Hook::set('page.query', 'fn_page_query');
-Hook::set('page.tags', 'fn_page_tags');
+Hook::set('*.query', 'fn_page_query');
+Hook::set('*.tags', 'fn_page_tags');
 
 function fn_route_tag($path = "", $step = 1) {
     global $language, $site, $url;
@@ -92,7 +92,7 @@ function fn_route_tag($path = "", $step = 1) {
             'page' => new Page
         ]);
         // --ditto
-        Config::set('page.title', new Anemon([$site->title, $language->tag], ' &#x00B7; '));
+        Config::set('page.title', new Anemon([$language->tag, $site->title], ' &#x00B7; '));
         if ($sss === $state['path']) {
             $pages = [];
             $path = implode('/', $chops);
@@ -116,13 +116,13 @@ function fn_route_tag($path = "", $step = 1) {
                 $site->is = '404';
                 Shield::abort();
             }
-            $page = new Page(TAG . DS . $ss . '.page', [], 'tag');
+            $tag = new Tag(TAG . DS . $ss . '.page');
             $site->is = 'pages';
-            $site->tag = $page;
-            if ($page->description) {
-                $site->description = $page->description;
+            $site->tag = $tag;
+            if ($tag->description) {
+                $site->description = $tag->description;
             }
-            Config::set('page.title', new Anemon([$page->title, $language->tag, $site->title], ' &#x00B7; '));
+            Config::set('page.title', new Anemon([$tag->title, $language->tag, $site->title], ' &#x00B7; '));
             Lot::set([
                 'pages' => $pages,
                 'page' => $page,
@@ -134,18 +134,3 @@ function fn_route_tag($path = "", $step = 1) {
 }
 
 Route::lot(['%*%/%i%', '%*%'], 'fn_route_tag');
-
-// Apply `page.content` hook to the `tag.content`
-Hook::set('tag.content', function(...$lot) {
-    return Hook::fire('page.content', $lot);
-}, 0);
-
-// Apply `page.title` hook to the `tag.title`
-Hook::set('tag.title', function(...$lot) {
-    return Hook::fire('page.title', $lot);
-}, 0);
-
-// Apply `page.author` hook to the `tag.author`
-Hook::set('tag.author', function(...$lot) {
-    return Hook::fire('page.author', $lot);
-}, 0);
