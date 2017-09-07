@@ -125,7 +125,7 @@ function fn_route_tag($path = "", $step = 1) {
             Config::set('page.title', new Anemon([$tag->title, $language->tag, $site->title], ' &#x00B7; '));
             Lot::set([
                 'pages' => $pages,
-                'page' => $page,
+                'page' => $tag,
                 'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $ss, $elevator, $site->is)
             ]);
             Shield::attach('pages/' . $path);
