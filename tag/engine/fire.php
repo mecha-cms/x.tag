@@ -47,7 +47,7 @@ function fn_page_tags($content, $lot) {
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
         $v = str_replace(' ', '-', $v);
-        $tags[$v] = new Page(TAG . DS . $v . '.page', [], ['*', 'tag']);
+        $tags[$v] = new Tag(TAG . DS . $v . '.page');
     }
     return $tags;
 }
