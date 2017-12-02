@@ -6,4 +6,4 @@ function fn_get_tags($folder = TAG, $state = 'page', $sort = [1, 'id'], $key = n
     return call_user_func('fn_get_pages', $folder, $state, $sort, $key);
 }
 
-Get::plug('tags', 'fn_get_tags');
+Get::_('tags', 'fn_get_tags');
