@@ -2,6 +2,8 @@
 
 return [
     'path' => 'tag',
-    'sort' => [-1, 'time'],
-    'chunk' => 5
+    'tag' => [
+        // 'sort' => [-1, 'time'],
+        // 'chunk' => 5
+    ]
 ];

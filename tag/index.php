@@ -14,6 +14,12 @@ r(__DIR__ . DS . 'engine' . DS . 'plug', [
     'to.php'
 ], null, Lot::get(null, []));
 
+// Store tag state to registry…
+$state = Extend::state('tag');
+if (!empty($state['tag'])) {
+    Config::extend(['tag' => $state['tag']]);
+}
+
 function fn_tag_url($s) {
     global $site, $url;
     $path = $url->path;
@@ -62,37 +68,29 @@ function fn_page_tags($content, $lot) {
 Hook::set('*.query', 'fn_page_query');
 Hook::set('*.tags', 'fn_page_tags');
 
-function fn_route_tag($path = "", $step = 1) {
+Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($state) {
     global $language, $site, $url;
     $step = $step - 1;
     $chops = explode('/', $path);
-    $state = Extend::state('tag');
-    $state_page = Extend::state('page');
     // From the tag’s state
-    if (isset($state['sort'])) {
-        $sort = $state['sort'];
+    if (isset($site->tag->sort)) {
+        $sort = $site->tag->sort;
     // Inherit page extension’s state
-    } else if (isset($state_page['sort'])) {
-        $sort = $state_page['sort'];
-    // Inherit global state
     } else if (isset($site->page->sort)) {
         $sort = $site->page->sort;
-    // --ditto
+    // Else…
     } else {
-        $sort = $site->sort;
+        $sort = [1, 'path'];
     }
     // From the tag’s state
-    if (isset($state['chunk'])) {
-        $chunk = $state['chunk'];
+    if (isset($site->tag->chunk)) {
+        $chunk = $site->tag->chunk;
     // Inherit page extension’s state
-    } else if (isset($state_page['chunk'])) {
-        $chunk = $state_page['chunk'];
-    // Inherit global state
     } else if (isset($site->page->chunk)) {
         $chunk = $site->page->chunk;
-    // -- ditto
+    // Else…
     } else {
-        $chunk = $site->chunk;
+        $chunk = 5;
     }
     $slug = array_pop($chops); // the tag slug
     $path = array_pop($chops); // the tag path
@@ -118,14 +116,6 @@ function fn_route_tag($path = "", $step = 1) {
     ];
     // Get tag ID from tag slug…
     if (($id = From::tag($slug)) !== false) {
-        // Placeholder…
-        Lot::set([
-            'pager' => new Elevator([], 1, 0, true, $elevator, $site->is),
-            'page' => new Page,
-            'pages' => [],
-            'parent' => new Page
-        ]);
-        // --ditto
         $pages = $page = [];
         Config::set('page.title', new Anemon([$language->tag, $site->title], ' &#x00B7; '));
         if ($path === $state['path']) {
@@ -140,11 +130,11 @@ function fn_route_tag($path = "", $step = 1) {
             if ($files = Get::pages($r, 'page', $sort, 'slug')) {
                 $files = array_filter($files, function($v) use($id, $r) {
                     if (!$k = File::exist($r . DS . $v . DS . 'kind.data')) {
-                        if (!$k = Page::apart($r . DS . $v . '.page', 'kind', null, true)) {
+                        if (!$k = Page::apart($r . DS . $v . '.page', 'kind')) {
                             return false;
                         }
                     }
-                    $k = ',' . str_replace(' ', "", t(file_get_contents($k), '[', ']')) . ',';
+                    $k = ',' . str_replace(' ', "", t(is_file($k) ? file_get_contents($k) : $k, '[', ']')) . ',';
                     if (strpos($k, ',' . $id . ',') !== false) {
                         return true;
                     }
@@ -161,19 +151,20 @@ function fn_route_tag($path = "", $step = 1) {
             $tag = new Tag(TAG . DS . $slug . '.page');
             $site->is = 'pages';
             $site->tag = $tag;
+            foreach ((array) $state['tag'] as $k => $v) {
+                $site->tag->{'_' . $k} = $v;
+            }
             if ($tag->description) {
                 $site->description = $tag->description;
             }
             Config::set('page.title', new Anemon([$tag->title, $language->tag, $site->title], ' &#x00B7; '));
             Lot::set([
-                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $slug, $elevator, $site->is),
                 'page' => $tag,
+                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $slug, $elevator, $site->is),
                 'pages' => $pages,
                 'parent' => $page
             ]);
             Shield::attach('pages/' . $path);
         }
     }
-}
-
-Route::lot(['%*%/%i%', '%*%'], 'fn_route_tag');
+});
