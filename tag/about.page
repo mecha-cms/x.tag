@@ -12,4 +12,22 @@ dependency:
 
 This extension enables tags feature on any pages by utilizing the `kind` property value as the tag ID. This extension also adds a new route definition like `http://127.0.0.1/blog/tag/slug` on every pages to make it possible to list all pages in the current folder by tags.
 
+### Condition
+
+These page conditional statements are available:
+
+ - `$site->has('parent') → Return the current tag’s file path if any.
+ - `$site->has('tag')` → Return `1` if there is a tag to load.
+ - `$site->is('tag')` → Return the current tag ID if there is a tag to load.
+ - `$site->is('tags')` → Return list of tag ID found in the current results.
+
+### Class
+
+These HTML classes will be added automatically if your `<html>` element has `class` attribute:
+
+ - `has-tag` → Will be added if current page is a tag page.
+ - `has-tags` → Will be added if current results contain tags.
+ - `is-tag` → Will be added if current page is a tag page.
+ - `is-tags` → Will be added if current results contain tags.
+
 <!-- block:donate -->

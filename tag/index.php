@@ -17,22 +17,8 @@ r(__DIR__ . DS . 'engine' . DS . 'plug', [
 // Store tag state to registry…
 $state = Extend::state('tag');
 if (!empty($state['tag'])) {
-    Config::extend(['tag' => $state['tag']]);
+    Config::alt(['tag' => $state['tag']]);
 }
-
-function fn_tag_url($s) {
-    global $site, $url;
-    $path = $url->path;
-    if ($site->tag) { // → `blog/tag/tag-slug`
-        $path = URL::I($path); // remove page offset from URL path
-        $path = Path::D($path, 2);
-    } else if ($site->is === 'page') { // → `blog/page-slug`
-        $path = Path::D($path);
-    }
-    return $url . ($path ? '/' . $path : "") . '/' . Extend::state('tag', 'path') . '/' . Path::N($s);
-}
-
-Hook::set('tag.url', 'fn_tag_url');
 
 function fn_page_query_set($content, $lot) {
     $query = [];
@@ -68,8 +54,7 @@ function fn_page_tags($content, $lot) {
 Hook::set('*.query', 'fn_page_query');
 Hook::set('*.tags', 'fn_page_tags');
 
-Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($state) {
-    global $language, $site, $url;
+Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $site, $state, $url) {
     $step = $step - 1;
     $chops = explode('/', $path);
     // From the tag’s state
@@ -92,7 +77,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($state) {
     } else {
         $chunk = 5;
     }
-    $slug = array_pop($chops); // the tag slug
+    $s = array_pop($chops); // the tag slug
     $path = array_pop($chops); // the tag path
     // Based on `lot\extend\page\index.php`
     $elevator = [
@@ -115,56 +100,98 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($state) {
         ]
     ];
     // Get tag ID from tag slug…
-    if (($id = From::tag($slug)) !== false) {
-        $pages = $page = [];
+    if (($id = From::tag($s)) !== false) {
+        $kinds = "";
+        $pages = $page = $tag = [];
         Config::set('page.title', new Anemon([$language->tag, $site->title], ' &#x00B7; '));
         if ($path === $state['path']) {
             $path = implode('/', $chops);
-            $r = PAGE . DS . $path;
+            $r = PAGE . DS . To::path($path);
             if ($file = File::exist([
                 $r . '.page',
                 $r . '.archive'
             ])) {
                 $page = new Page($file);
             }
-            if ($files = Get::pages($r, 'page', $sort, 'slug')) {
-                $files = array_filter($files, function($v) use($id, $r) {
-                    if (!$k = File::exist($r . DS . $v . DS . 'kind.data')) {
-                        if (!$k = Page::apart($r . DS . $v . '.page', 'kind')) {
-                            return false;
-                        }
+            if ($files = Get::pages($r, 'page', $sort, 'path')) {
+                $files = array_filter($files, function($v) use(&$kinds, $id) {
+                    if ($k = File::exist(Path::F($v) . DS . 'kind.data')) {
+                        $k = file_get_contents($k);
+                    } else if (!$k = Page::apart($v, 'kind')) {
+                        return false;
                     }
-                    $k = ',' . str_replace(' ', "", t(is_file($k) ? file_get_contents($k) : $k, '[', ']')) . ',';
+                    $k = ',' . str_replace(' ', "", trim($k, '[]')) . ',';
+                    $kinds .= $k;
                     if (strpos($k, ',' . $id . ',') !== false) {
                         return true;
                     }
                     return false;
                 });
+                if ($query = l(Request::get($site->q, ""))) {
+                    $query = explode(' ', $query);
+                    Config::set('is.search', true);
+                    $files = array_filter($files, function($v) use($query) {
+                        $v = Path::N($v);
+                        foreach ($query as $q) {
+                            if (strpos($v, $q) !== false) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
+                $files = array_values($files);
                 foreach (Anemon::eat($files)->chunk($chunk, $step) as $v) {
-                    $pages[] = new Page($r . DS . $v . '.page');
+                    $pages[] = new Page($v);
                 }
             }
-            if (empty($pages)) {
-                $site->is = '404';
-                Shield::abort();
+            if ($f = File::exist([
+                TAG . DS . $s . '.page',
+                TAG . DS . $s . '.archive'
+            ])) {
+                $tag = new Tag($f);
             }
-            $tag = new Tag(TAG . DS . $slug . '.page');
-            $site->is = 'pages';
-            $site->tag = $tag;
-            foreach ((array) $state['tag'] as $k => $v) {
-                $site->tag->{'_' . $k} = $v;
+            $t = '/' . $path . '/' . $state['path'] . '/' . $s;
+            $kinds = array_unique(array_filter(explode(',', $kinds)));
+            sort($kinds);
+            Config::set([
+                'is' => [
+                    'error' => false,
+                    'page' => false,
+                    'pages' => $files,
+                    'tag' => $id,
+                    'tags' => e($kinds)
+                ],
+                'has' => [
+                    'next' => count($files) > ($step ?: 1) * $chunk,
+                    'page' => 0,
+                    'pages' => count($files),
+                    'parent' => $f,
+                    'tag' => $f ? 1 : 0,
+                    'tags' => count($kinds)
+                ]
+            ]);
+            if (empty($pages)) {
+                // Greater than the maximum step or less than `1`, abort!
+                Config::set('is.error', 404);
+                Config::set('has.next', false);
+                Shield::abort('404' . $t);
             }
             if ($tag->description) {
-                $site->description = $tag->description;
+                Config::set('page.description', $tag->description);
             }
-            Config::set('page.title', new Anemon([$tag->title, $language->tag, $site->title], ' &#x00B7; '));
+            $title = [$tag->title, $language->tag, $site->title];
+            if ($query) {
+                array_unshift($title, $language->search . ': ' . implode(' ', $query));
+            }
+            Config::set('page.title', new Anemon($title, ' &#x00B7; '));
             Lot::set([
-                'page' => $tag,
-                'pager' => new Elevator($files, $chunk, $step, $url . '/' . $path . '/' . $state['path'] . '/' . $slug, $elevator, $site->is),
+                'page' => $page,
+                'pager' => new Elevator($files, $chunk, $step, $url . $t, $elevator, 'tags'),
                 'pages' => $pages,
-                'parent' => $page
+                'parent' => $tag
             ]);
-            Shield::attach('pages/' . $path);
+            Shield::attach('pages' . $t);
         }
     }
 });
