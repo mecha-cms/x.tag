@@ -127,7 +127,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
                     }
                     return false;
                 });
-                if ($query = l(Request::get($site->q, ""))) {
+                if ($query = l(HTTP::get($site->q, ""))) {
                     $query = explode(' ', $query);
                     Config::set('is.search', true);
                     $files = array_filter($files, function($v) use($query) {
@@ -187,7 +187,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
             Config::set('page.title', new Anemon($title, ' &#x00B7; '));
             Lot::set([
                 'page' => $page,
-                'pager' => new Elevator($files, $chunk, $step, $url . $t, $elevator, 'tags'),
+                'pager' => new Elevator($files, [$chunk, $step], $url . $t, $elevator),
                 'pages' => $pages,
                 'parent' => $tag
             ]);
