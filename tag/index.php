@@ -103,7 +103,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
     if (($id = From::tag($s)) !== false) {
         $kinds = "";
         $pages = $page = $tag = [];
-        Config::set('page.title', new Anemon([$language->tag, $site->title], ' &#x00B7; '));
+        Config::set('trace', new Anemon([$language->tag, $site->title], ' &#x00B7; '));
         if ($path === $state['path']) {
             $path = implode('/', $chops);
             $r = PAGE . DS . To::path($path);
@@ -184,7 +184,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
             if ($query) {
                 array_unshift($title, $language->search . ': ' . implode(' ', $query));
             }
-            Config::set('page.title', new Anemon($title, ' &#x00B7; '));
+            Config::set('trace', new Anemon($title, ' &#x00B7; '));
             Lot::set([
                 'page' => $page,
                 'pager' => new Elevator($files, [$chunk, $step], $url . $t, $elevator),
