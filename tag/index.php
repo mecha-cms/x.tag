@@ -57,26 +57,8 @@ Hook::set('*.tags', 'fn_page_tags');
 Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $site, $state, $url) {
     $step = $step - 1;
     $chops = explode('/', $path);
-    // From the tag’s state
-    if (isset($site->tag->sort)) {
-        $sort = $site->tag->sort;
-    // Inherit page extension’s state
-    } else if (isset($site->page->sort)) {
-        $sort = $site->page->sort;
-    // Else…
-    } else {
-        $sort = [1, 'path'];
-    }
-    // From the tag’s state
-    if (isset($site->tag->chunk)) {
-        $chunk = $site->tag->chunk;
-    // Inherit page extension’s state
-    } else if (isset($site->page->chunk)) {
-        $chunk = $site->page->chunk;
-    // Else…
-    } else {
-        $chunk = 5;
-    }
+    $sort = $site->tag('sort', $site->page('sort', [1, 'path']));
+    $chunk = $site->tag('chunk', $site->page('chunk', 5));
     $s = array_pop($chops); // the tag slug
     $path = array_pop($chops); // the tag path
     // Based on `lot\extend\page\index.php`
