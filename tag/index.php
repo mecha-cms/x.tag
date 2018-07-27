@@ -131,7 +131,7 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
                 TAG . DS . $s . '.page',
                 TAG . DS . $s . '.archive'
             ])) {
-                $tag = new Tag($f);
+                $page->tag = ($tag = new Tag($f));
             }
             $t = '/' . $path . '/' . $state['path'] . '/' . $s;
             $kinds = array_unique(array_filter(explode(',', $kinds)));
@@ -145,7 +145,6 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
                     'tags' => e($kinds)
                 ],
                 'has' => [
-                    'next' => count($files) > ($step ?: 1) * $chunk,
                     'page' => 0,
                     'pages' => count($files),
                     'parent' => $f,
@@ -156,7 +155,10 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
             if (empty($pages)) {
                 // Greater than the maximum step or less than `1`, abort!
                 Config::set('is.error', 404);
-                Config::set('has.next', false);
+                Config::set('has', [
+                    $elevator['direction']['1'] => false,
+                    $elevator['direction']['-1'] => false
+                ]);
                 Shield::abort('404' . $t);
             }
             if ($tag->description) {
@@ -166,12 +168,16 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
             if ($query) {
                 array_unshift($title, $language->search . ': ' . implode(' ', $query));
             }
-            Config::set('trace', new Anemon($title, ' &#x00B7; '));
             Lot::set([
                 'page' => $page,
-                'pager' => new Elevator($files, [$chunk, $step], $url . $t, $elevator),
+                'pager' => ($pager = new Elevator($files, [$chunk, $step], $url . $t, $elevator)),
                 'pages' => $pages,
                 'parent' => $tag
+            ]);
+            Config::set('trace', new Anemon($title, ' &#x00B7; '));
+            Config::set('has', [
+                $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
+                $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']},
             ]);
             Shield::attach('pages' . $t);
         }
