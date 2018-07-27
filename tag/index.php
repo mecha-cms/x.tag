@@ -34,14 +34,14 @@ function fn_page_query_set($content, $lot) {
     return $query;
 }
 
-function fn_page_query($content, $lot) {
+function fn_page_query($content, $lot = []) {
     if (!$content || !array_key_exists('query', $lot) || !file_exists(Path::F($lot['path']) . DS . 'query.data')) {
         return fn_page_query_set($content, $lot);
     }
     return $content;
 }
 
-function fn_page_tags($content, $lot) {
+function fn_page_tags($content, $lot = []) {
     global $url;
     $tags = [];
     foreach (fn_page_query_set($content, $lot) as $v) {
@@ -54,6 +54,14 @@ function fn_page_tags($content, $lot) {
 Hook::set('*.query', 'fn_page_query');
 Hook::set('*.tags', 'fn_page_tags');
 
+Hook::set('shield.enter', function() {
+    if ($page = Lot::get('page')) {
+        $kinds = (array) $page->kind;
+        sort($kinds);
+        Config::set('has.tags', $kinds);
+    }
+}, 0);
+
 Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $site, $state, $url) {
     $step = $step - 1;
     $chops = explode('/', $path);
@@ -61,26 +69,6 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
     $chunk = $site->tag('chunk', $site->page('chunk', 5));
     $s = array_pop($chops); // the tag slug
     $path = array_pop($chops); // the tag path
-    // Based on `lot\extend\page\index.php`
-    $elevator = [
-        'direction' => [
-           '-1' => 'previous',
-            '1' => 'next'
-        ],
-        'union' => [
-           '-2' => [
-                2 => ['rel' => null]
-            ],
-           '-1' => [
-                1 => Elevator::WEST,
-                2 => ['rel' => 'prev']
-            ],
-            '1' => [
-                1 => Elevator::EAST,
-                2 => ['rel' => 'next']
-            ]
-        ]
-    ];
     // Get tag ID from tag slug…
     if (($id = From::tag($s)) !== false) {
         $kinds = "";
@@ -139,45 +127,39 @@ Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $s
             Config::set([
                 'is' => [
                     'error' => false,
-                    'page' => false,
+                    'page' => $f,
                     'pages' => $files,
-                    'tag' => $id,
                     'tags' => e($kinds)
                 ],
                 'has' => [
-                    'page' => 0,
+                    'page' => $f ? 1 : 0,
                     'pages' => count($files),
-                    'parent' => $f,
-                    'tag' => $f ? 1 : 0,
-                    'tags' => count($kinds)
+                    'parent' => $page
                 ]
             ]);
-            if (empty($pages)) {
-                // Greater than the maximum step or less than `1`, abort!
-                Config::set('is.error', 404);
-                Config::set('has', [
-                    $elevator['direction']['1'] => false,
-                    $elevator['direction']['-1'] => false
-                ]);
-                Shield::abort('404' . $t);
-            }
-            if ($tag->description) {
-                Config::set('page.description', $tag->description);
-            }
             $title = [$tag->title, $language->tag, $site->title];
             if ($query) {
                 array_unshift($title, $language->search . ': ' . implode(' ', $query));
             }
             Lot::set([
-                'page' => $page,
-                'pager' => ($pager = new Elevator($files, [$chunk, $step], $url . $t, $elevator)),
+                'page' => $tag,
+                'pager' => ($pager = new Pager($files, [$chunk, $step], $url . $t)),
                 'pages' => $pages,
-                'parent' => $tag
+                'parent' => $page
             ]);
+            if (empty($pages)) {
+                // Greater than the maximum step or less than `1`, abort!
+                Config::set('is.error', 404);
+                Config::set('has', [
+                    $pager->config['direction']['<'] => false,
+                    $pager->config['direction']['>'] => false
+                ]);
+                Shield::abort('404' . $t);
+            }
             Config::set('trace', new Anemon($title, ' &#x00B7; '));
             Config::set('has', [
-                $elevator['direction']['1'] => !!$pager->{$elevator['direction']['1']},
-                $elevator['direction']['-1'] => !!$pager->{$elevator['direction']['-1']},
+                $pager->config['direction']['<'] => !!$pager->{$pager->config['direction']['<']},
+                $pager->config['direction']['>'] => !!$pager->{$pager->config['direction']['>']},
             ]);
             Shield::attach('pages' . $t);
         }
