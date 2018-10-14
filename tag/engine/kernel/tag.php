@@ -13,7 +13,7 @@ class Tag extends Page {
         }
         parent::__construct($path, extend([
             'url' => $n ? $GLOBALS['URL']['$'] . ($p ? '/' . $p : "") . '/' . Extend::state('tag', 'path') . '/' . $n : null
-        ], $lot), $NS);
+        ], $lot, false), $NS);
     }
 
 }
