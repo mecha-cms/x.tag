@@ -13,13 +13,9 @@ if (!empty($state['tag'])) {
     \Config::alt(['tag' => $state['tag']]);
 }
 
-function q($content, $lot) {
+function q($x, $self) {
     $query = [];
-    $f = \Path::F($lot['path']);
-    if (!array_key_exists('kind', $lot)) {
-        $lot['kind'] = \e(\File::open($f . DS . 'kind.data')->read([]));
-    }
-    foreach ($lot['kind'] as $v) {
+    foreach ((array) $self->kind as $v) {
         if ($slug = \To::tag($v)) {
             $query[] = str_replace('-', ' ', $slug);
         }
@@ -27,25 +23,24 @@ function q($content, $lot) {
     return $query;
 }
 
-function query($content, $lot = []) {
-    if (!$content || !array_key_exists('query', $lot) || !file_exists(\Path::F($lot['path']) . DS . 'query.data')) {
-        return q($content, $lot);
+function query($query) {
+    if (!isset($query)) {
+        return q($query, $this);
     }
-    return $content;
+    return (array) $query;
 }
 
-function tags($content, $lot = []) {
-    global $url;
-    $tags = [];
-    foreach (query($content, $lot) as $v) {
+function tags($tags) {
+    $out = [];
+    foreach ((array) $this->query as $v) {
         $v = str_replace(' ', '-', $v);
-        $tags[$v] = new \Tag(TAG . DS . $v . '.page');
+        $out[$v] = new \Tag(TAG . DS . $v . '.page');
     }
-    return $tags;
+    return new \Anemon($out);
 }
 
-\Hook::set('*.query', __NAMESPACE__ . '\query');
-\Hook::set('*.tags', __NAMESPACE__ . '\tags');
+\Hook::set('*.query', __NAMESPACE__ . '\query', 0);
+\Hook::set('*.tags', __NAMESPACE__ . '\tags', 0);
 
 \Hook::set('shield.enter', function() {
     if ($page = \Lot::get('page')) {
@@ -65,7 +60,6 @@ function tags($content, $lot = []) {
     // Get tag ID from tag slug…
     if (($id = \From::tag($s)) !== false) {
         $kinds = "";
-        $pages = $page = $tag = [];
         \Config::set('trace', new \Anemon([$language->tag, $site->title], ' &#x00B7; '));
         if ($path === $state['path']) {
             $path = implode('/', $chops);
@@ -76,9 +70,10 @@ function tags($content, $lot = []) {
             ])) {
                 $page = new \Page($file);
             }
-            if ($files = \Get::pages($r, 'page', $sort, 'path')) {
-                $files = array_filter($files, function($v) use(&$kinds, $id) {
-                    if ($k = \File::exist(Path::F($v) . DS . 'kind.data')) {
+            $pages = \Get::pages($r, 'page', $sort, 'path');
+            if ($pages->count() > 0) {
+                $pages->is(function($v) use(&$kinds, $id) {
+                    if ($k = \File::exist(\Path::F($v) . DS . 'kind.data')) {
                         $k = file_get_contents($k);
                     } else if (!$k = \Page::apart($v, 'kind')) {
                         return false;
@@ -93,7 +88,7 @@ function tags($content, $lot = []) {
                 if ($query = \l(\HTTP::get($site->q, ""))) {
                     $query = explode(' ', $query);
                     \Config::set('is.search', true);
-                    $files = array_filter($files, function($v) use($query) {
+                    $pages->is(function($v) use($query) {
                         $v = \Path::N($v);
                         foreach ($query as $q) {
                             if (strpos($v, $q) !== false) {
@@ -102,10 +97,6 @@ function tags($content, $lot = []) {
                         }
                         return false;
                     });
-                }
-                $files = array_values($files);
-                foreach (\Anemon::eat($files)->chunk($chunk, $step) as $v) {
-                    $pages[] = new \Page($v);
                 }
             }
             if ($f = \File::exist([
@@ -121,12 +112,12 @@ function tags($content, $lot = []) {
                 'is' => [
                     'error' => false,
                     'page' => $f,
-                    'pages' => $files,
+                    'pages' => $pages->vomit(null, false),
                     'tags' => e($kinds)
                 ],
                 'has' => [
                     'page' => $f ? 1 : 0,
-                    'pages' => count($files),
+                    'pages' => $pages->count(),
                     'parent' => $page
                 ]
             ]);
@@ -134,25 +125,31 @@ function tags($content, $lot = []) {
             if ($query) {
                 array_unshift($title, $language->search . ': ' . implode(' ', $query));
             }
+            $pager = new \Pager($pages->vomit(), [$chunk, $step], $url . $t);
+            $pager_previous = $pager->config['direction']['<'];
+            $pager_next = $pager->config['direction']['>'];
+            $pages->chunk($chunk, $step)->map(function($v) {
+                return new \Page($v);
+            });
             \Lot::set([
                 'page' => $tag,
-                'pager' => ($pager = new \Pager($files, [$chunk, $step], $url . $t)),
+                'pager' => $pager,
                 'pages' => $pages,
                 'parent' => $page
             ]);
-            if (empty($pages)) {
+            if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
                 \Config::set('is.error', 404);
                 \Config::set('has', [
-                    $pager->config['direction']['<'] => false,
-                    $pager->config['direction']['>'] => false
+                    $pager_previous => false,
+                    $pager_next => false
                 ]);
                 \Shield::abort('404' . $t);
             }
             \Config::set('trace', new \Anemon($title, ' &#x00B7; '));
             \Config::set('has', [
-                $pager->config['direction']['<'] => !!$pager->{$pager->config['direction']['<']},
-                $pager->config['direction']['>'] => !!$pager->{$pager->config['direction']['>']},
+                $pager_previous => !!$pager->{$pager_previous},
+                $pager_next => !!$pager->{$pager_next},
             ]);
             \Shield::attach('pages' . $t);
         }
