@@ -17,7 +17,7 @@ function q($x, $self) {
     $query = [];
     foreach ((array) $self->kind as $v) {
         if ($slug = \To::tag($v)) {
-            $query[] = str_replace('-', ' ', $slug);
+            $query[] = strtr($slug, '-', ' ');
         }
     }
     return $query;
@@ -33,7 +33,7 @@ function query($query) {
 function tags($tags) {
     $out = [];
     foreach ((array) $this->query as $v) {
-        $v = str_replace(' ', '-', $v);
+        $v = strtr($v, ' ', '-');
         $out[$v] = new \Tag(TAG . DS . $v . '.page');
     }
     return new \Anemon($out);
@@ -144,14 +144,14 @@ function tags($tags) {
                     $pager_previous => false,
                     $pager_next => false
                 ]);
-                \Shield::abort('404' . $t);
+                return \Shield::abort('404' . $t);
             }
             \Config::set('trace', new \Anemon($title, ' &#x00B7; '));
             \Config::set('has', [
                 $pager_previous => !!$pager->{$pager_previous},
                 $pager_next => !!$pager->{$pager_next},
             ]);
-            \Shield::attach('pages' . $t);
+            return \Shield::attach('pages' . $t);
         }
     }
 });
