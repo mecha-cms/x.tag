@@ -1,11 +1,7 @@
 <?php namespace fn\tag;
 
 // Require the plug manually…
-\r(__DIR__ . DS . 'engine' . DS . 'plug', [
-    'from.php',
-    'get.php',
-    'to.php'
-], null, \Lot::get(null, []));
+\r(['from', 'get', 'to'], __DIR__ . DS . 'engine' . DS . 'plug', \Lot::get(null, []));
 
 // Store tag state to registry…
 $state = \Extend::state('tag');
@@ -39,8 +35,8 @@ function tags($tags) {
     return new \Anemon($out);
 }
 
-\Hook::set('*.query', __NAMESPACE__ . '\query', 0);
-\Hook::set('*.tags', __NAMESPACE__ . '\tags', 0);
+\Hook::set('*.query', __NAMESPACE__ . "\\query", 0);
+\Hook::set('*.tags', __NAMESPACE__ . "\\tags", 0);
 
 \Hook::set('shield.enter', function() {
     if ($page = \Lot::get('page')) {
