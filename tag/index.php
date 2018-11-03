@@ -68,7 +68,7 @@ function tags($tags) {
             }
             $pages = \Get::pages($r, 'page', $sort, 'path');
             if ($pages->count() > 0) {
-                $pages->is(function($v) use(&$kinds, $id) {
+                $pages = $pages->is(function($v) use(&$kinds, $id) {
                     if ($k = \File::exist(\Path::F($v) . DS . 'kind.data')) {
                         $k = file_get_contents($k);
                     } else if (!$k = \Page::apart($v, 'kind')) {
@@ -84,7 +84,7 @@ function tags($tags) {
                 if ($query = \l(\HTTP::get($site->q, ""))) {
                     $query = explode(' ', $query);
                     \Config::set('is.search', true);
-                    $pages->is(function($v) use($query) {
+                    $pages = $pages->is(function($v) use($query) {
                         $v = \Path::N($v);
                         foreach ($query as $q) {
                             if (strpos($v, $q) !== false) {
@@ -124,7 +124,7 @@ function tags($tags) {
             $pager = new \Pager($pages->vomit(), [$chunk, $step], $url . $t);
             $pager_previous = $pager->config['direction']['<'];
             $pager_next = $pager->config['direction']['>'];
-            $pages->chunk($chunk, $step)->map(function($v) {
+            $pages = $pages->chunk($chunk, $step)->map(function($v) {
                 return new \Page($v);
             });
             \Lot::set([
