@@ -85,7 +85,7 @@ function tags($tags) {
                     $query = explode(' ', $query);
                     \Config::set('is.search', true);
                     $pages = $pages->is(function($v) use($query) {
-                        $v = \Path::N($v);
+                        $v = str_replace('-', "", \Path::N($v));
                         foreach ($query as $q) {
                             if (strpos($v, $q) !== false) {
                                 return true;
