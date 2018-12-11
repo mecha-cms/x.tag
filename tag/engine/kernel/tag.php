@@ -2,13 +2,13 @@
 
 class Tag extends Page {
 
-    public function __construct($path = null, array $lot = [], $NS = []) {
-        global $site, $url;
+    public function __construct(string $path = null, array $lot = [], $NS = []) {
+        global $config, $url;
         $p = $GLOBALS['URL']['path'];
         $n = $path ? Path::N($path) : null;
-        if ($site->is('tags')) { // → `blog/tag/tag-slug`
+        if ($config->is('tags')) { // → `blog/tag/tag-slug`
             $p = Path::D($p, 2);
-        } else if ($site->is('page')) { // → `blog/page-slug`
+        } else if ($config->is('page')) { // → `blog/page-slug`
             $p = Path::D($p);
         }
         parent::__construct($path, extend([

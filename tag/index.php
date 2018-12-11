@@ -1,7 +1,7 @@
 <?php namespace fn\tag;
 
 // Require the plug manually…
-\r(['from', 'get', 'to'], __DIR__ . DS . 'engine' . DS . 'plug', \Lot::get(null, []));
+\r(['from', 'get', 'to'], __DIR__ . DS . 'engine' . DS . 'plug', \Lot::get());
 
 // Store tag state to registry…
 $state = \Extend::state('tag');
@@ -46,17 +46,17 @@ function tags($tags) {
     }
 }, 0);
 
-\Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($language, $site, $state, $url) {
+\Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($config, $language, $state, $url) {
     $step = $step - 1;
     $chops = explode('/', $path);
-    $sort = $site->tag('sort', $site->page('sort', [1, 'path']));
-    $chunk = $site->tag('chunk', $site->page('chunk', 5));
+    $sort = $config->tag('sort', $config->page('sort', [1, 'path']));
+    $chunk = $config->tag('chunk', $config->page('chunk', 5));
     $s = array_pop($chops); // the tag slug
     $path = array_pop($chops); // the tag path
     // Get tag ID from tag slug…
     if (($id = \From::tag($s)) !== false) {
         $kinds = "";
-        \Config::set('trace', new \Anemon([$language->tag, $site->title], ' &#x00B7; '));
+        \Config::set('trace', new \Anemon([$language->tag, $config->title], ' &#x00B7; '));
         if ($path === $state['path']) {
             $path = implode('/', $chops);
             $r = PAGE . DS . \To::path($path);
@@ -81,7 +81,7 @@ function tags($tags) {
                     }
                     return false;
                 });
-                if ($query = \l(\HTTP::get($site->q, ""))) {
+                if ($query = \l(\HTTP::get($config->q, ""))) {
                     $query = explode(' ', $query);
                     \Config::set('is.search', true);
                     $pages = $pages->is(function($v) use($query) {
@@ -99,7 +99,7 @@ function tags($tags) {
                 TAG . DS . $s . '.page',
                 TAG . DS . $s . '.archive'
             ])) {
-                $page->tag = ($tag = new \Tag($f));
+                $tag = new \Tag($f);
             }
             $t = '/' . $path . '/' . $state['path'] . '/' . $s;
             $kinds = array_unique(array_filter(explode(',', $kinds)));
@@ -117,7 +117,7 @@ function tags($tags) {
                     'parent' => $page
                 ]
             ]);
-            $title = [$tag->title, $language->tag, $site->title];
+            $title = [$tag->title, $language->tag, $config->title];
             if ($query) {
                 array_unshift($title, $language->search . ': ' . implode(' ', $query));
             }
