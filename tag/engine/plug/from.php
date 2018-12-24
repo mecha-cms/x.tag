@@ -13,7 +13,7 @@ From::_('tag', function($slug, $fail = false) {
         $s . '.archive'
     ])) {
         // Get from embedded `id` data
-        return is_file($f) ? Page::apart($f, $id, $fail, true) : $fail;
+        return is_file($f) ? Page::apart($f, 'id', $fail, true) : $fail;
     }
     // Else…
     return $fail;

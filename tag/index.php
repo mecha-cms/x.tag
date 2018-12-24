@@ -71,7 +71,7 @@ function tags($tags) {
                 $pages = $pages->is(function($v) use(&$kinds, $id) {
                     if ($k = \File::exist(\Path::F($v) . DS . 'kind.data')) {
                         $k = file_get_contents($k);
-                    } else if (!$k = \Page::apart($v, 'kind')) {
+                    } else if (!$k = \Page::apart($v, 'kind', null, false)) {
                         return false;
                     }
                     $k = ',' . str_replace(' ', "", trim($k, '[]')) . ',';
