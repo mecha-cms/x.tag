@@ -1,7 +1,7 @@
 <?php namespace fn\tag;
 
 // Require the plug manually…
-\r(['from', 'get', 'to'], __DIR__ . DS . 'engine' . DS . 'plug', \Lot::get());
+\r(__DIR__ . DS . 'engine' . DS . 'plug' . DS . '%[from,get,to]%');
 
 // Store tag state to registry…
 $state = \Extend::state('tag');
