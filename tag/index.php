@@ -1,7 +1,9 @@
 <?php namespace fn\tag;
 
 // Require the plug manually…
-\r(__DIR__ . DS . 'engine' . DS . 'plug' . DS . '%[from,get,to]%');
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'from.php';
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
+require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'to.php';
 
 // Store tag state to registry…
 $state = \Extend::state('tag');

@@ -7,7 +7,7 @@ version: 1.6.2
 
 dependency:
   extension:
-    - page
+  - page
 ...
 
 This extension activates the tagging feature by utilizing the `kind` property on the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/slug` on every page to allow users to list all pages in the current folder by a tag.
