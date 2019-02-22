@@ -56,7 +56,7 @@ function tags($tags) {
     $s = \array_pop($chops); // the tag slug
     $path = \array_pop($chops); // the tag path
     // Get tag ID from tag slug…
-    if (($id = \From::tag($s)) !== false) {
+    if (false !== ($id = \From::tag($s))) {
         $kinds = "";
         \Config::set('trace', new \Anemon([$language->tag, $config->title], ' &#x00B7; '));
         if ($path === $state['path']) {
@@ -73,7 +73,7 @@ function tags($tags) {
                 $pages = $pages->is(function($v) use(&$kinds, $id) {
                     if ($k = \File::exist(\Path::F($v) . DS . 'kind.data')) {
                         $k = \file_get_contents($k);
-                    } else if (!$k = \Page::apart($v, 'kind', null, false)) {
+                    } else if (!$k = \Page::apart(\file_get_contents($v), 'kind', null, false)) {
                         return false;
                     }
                     $k = ',' . \str_replace(' ', "", \trim($k, '[]')) . ',';
@@ -83,7 +83,7 @@ function tags($tags) {
                     }
                     return false;
                 });
-                if ($query = \l(\HTTP::get($config->q, ""))) {
+                if ($query = \l(\HTTP::get($config->q) ?? "")) {
                     $query = \explode(' ', $query);
                     \Config::set('is.search', true);
                     $pages = $pages->is(function($v) use($query) {
