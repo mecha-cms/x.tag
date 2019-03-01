@@ -40,7 +40,7 @@ function tags($tags) {
 \Hook::set('*.query', __NAMESPACE__ . "\\query", 0);
 \Hook::set('*.tags', __NAMESPACE__ . "\\tags", 0);
 
-\Hook::set('shield.enter', function() {
+\Hook::set('enter', function() {
     if ($page = \Lot::get('page')) {
         $kinds = (array) $page->kind;
         \sort($kinds);
@@ -73,7 +73,7 @@ function tags($tags) {
                 $pages = $pages->is(function($v) use(&$kinds, $id) {
                     if ($k = \File::exist(\Path::F($v) . DS . 'kind.data')) {
                         $k = \file_get_contents($k);
-                    } else if (!$k = \Page::apart(\file_get_contents($v), 'kind', null, false)) {
+                    } else if (!$k = \Page::apart(\file_get_contents($v), 'kind', false)) {
                         return false;
                     }
                     $k = ',' . \str_replace(' ', "", \trim($k, '[]')) . ',';
