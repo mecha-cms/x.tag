@@ -2,18 +2,17 @@
 
 class Tag extends Page {
 
-    public function __construct(string $path = null, array $lot = [], $NS = []) {
-        global $config, $url;
+    public function __construct(string $path = null, array $lot = [], $prefix = []) {
         $p = $GLOBALS['URL']['path'];
         $n = $path ? Path::N($path) : null;
-        if ($config->is('tags')) { // → `blog/tag/tag-slug`
+        if (Config::is('tags')) { // → `blog/tag/tag-slug`
             $p = Path::D($p, 2);
-        } else if ($config->is('page')) { // → `blog/page-slug`
+        } else if (Config::is('page')) { // → `blog/page-slug`
             $p = Path::D($p);
         }
-        parent::__construct($path, extend([
+        parent::__construct($path, array_replace_recursive([
             'url' => $n ? $GLOBALS['URL']['$'] . ($p ? '/' . $p : "") . '/' . Extend::state('tag', 'path') . '/' . $n : null
-        ], $lot, false), $NS);
+        ], $lot), $prefix);
     }
 
 }

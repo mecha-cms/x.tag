@@ -48,15 +48,15 @@ function tags($tags) {
     }
 }, 0);
 
-\Route::lot(['%*%/%i%', '%*%'], function($path = "", $step = 1) use($config, $language, $state, $url) {
+\Route::lot(['(.+)/(\d+)', '(.+)'], function($path = "", $step = 1) use($config, $language, $state, $url) {
     $i = $step - 1; // 0-based index…
     $chops = \explode('/', $path);
-    $sort = $config->tag('sort', $config->page('sort', [1, 'path']));
-    $chunk = $config->tag('chunk', $config->page('chunk', 5));
+    $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
+    $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
     $s = \array_pop($chops); // the tag slug
     $path = \array_pop($chops); // the tag path
     // Get tag ID from tag slug…
-    if (false !== ($id = \From::tag($s))) {
+    if (null !== ($id = \From::tag($s))) {
         $kinds = "";
         \Config::set('trace', new \Anemon([$language->tag, $config->title], ' &#x00B7; '));
         if ($path === $state['path']) {
