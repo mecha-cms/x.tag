@@ -1,4 +1,4 @@
-<?php namespace fn\page;
+<?php namespace _\page;
 
 function query() {
     $query = [];

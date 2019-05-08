@@ -1,8 +1,0 @@
----
-type: YAML
-...
-
-tag: Tag
-tags: Tags
-
-_tag: Untagged

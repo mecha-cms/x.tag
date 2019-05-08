@@ -2,7 +2,8 @@
 
 // Check if current page has at least one tag
 Hook::set('enter', function() {
-    if ($page = Lot::get('page')) {
+    extract($GLOBALS, EXTR_SKIP);
+    if (!empty($page)) {
         Config::set('has.tags', $page->tags && count($page->tags) > 0);
     }
 });

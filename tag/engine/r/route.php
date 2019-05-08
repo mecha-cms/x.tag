@@ -1,23 +1,23 @@
-<?php namespace fn\route;
+<?php namespace _\route;
 
-function tag(string $path = null, $step = 1) {
+function tag() {
+    $path = $this[0];
+    $current = $this->url->i;
     // Load default page state(s)…
     $state = \Extend::state('tag');
-    // Include global variable(s)…
-    extract(\Lot::get(), \EXTR_SKIP);
-    $i = $step - 1; // 0-based index…
+    $i = $current - 1; // 0-based index…
     $chops = \explode('/', $path);
-    $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
-    $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
+    $sort = $this->config->tag('sort') ?? $this->config->page('sort') ?? [1, 'path'];
+    $chunk = $this->config->tag('chunk') ?? $this->config->page('chunk') ?? 5;
     $t = \array_pop($chops); // The tag slug
     $p = \array_pop($chops); // The tag path
     $has_tags = false;
     // Get tag ID from tag slug…
     if (null !== ($id = \From::tag($t))) {
-        \Config::set('trace', new \Anemon([$language->tag, $config->title], ' &#x00B7; '));
+        $this->title([$this->language->tag, $this->config->title]);
         if ($p === $state['path']) {
-            \Config::set('sort', $sort);
-            \Config::set('chunk', $chunk);
+            $this->config::set('sort', $sort);
+            $this->config::set('chunk', $chunk);
             $path = \implode('/', $chops);
             $r = PAGE . DS . $path;
             if ($file = \File::exist([
@@ -38,9 +38,9 @@ function tag(string $path = null, $step = 1) {
                     $has_tags = true;
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
-                if ($query = \l(\HTTP::get($config->q) ?? "")) {
+                if ($query = \l(\HTTP::get($this->config->q) ?? "")) {
                     $query = \explode(' ', $query);
-                    \Config::set('is.search', true);
+                    $this->config::set('is.search', true);
                     $pages = $pages->is(function($v) use($query) {
                         $v = \str_replace('-', "", \Path::N($v));
                         foreach ($query as $q) {
@@ -58,7 +58,7 @@ function tag(string $path = null, $step = 1) {
             ])) {
                 $tag = new \Tag($f);
             }
-            \Config::set([
+            $this->config::set([
                 'is' => [
                     'error' => false,
                     'page' => false,
@@ -72,39 +72,38 @@ function tag(string $path = null, $step = 1) {
                 ]
             ]);
             $path = '/' . $path . '/' . $p . '/' . $t;
-            $title = [$tag->title, $language->tag, $config->title];
+            $title = [$tag->title, $this->language->tag, $this->config->title];
             if ($query) {
-                \array_unshift($title, $language->search . ': ' . \implode(' ', $query));
+                \array_unshift($title, $this->language->search . ': ' . \implode(' ', $query));
             }
             $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
             });
-            \Lot::set([
-                'page' => $tag,
-                'pager' => $pager,
-                'pages' => $pages,
-                'parent' => $page
-            ]);
+            $GLOBALS['page'] = $tag;
+            $GLOBALS['pager'] = $pager;
+            $GLOBALS['pages'] = $pages;
+            $GLOBALS['parent'] = $page;
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
-                \Config::set('is.error', 404);
-                \Config::set('has', [
+                $this->config::set('is.error', 404);
+                $this->config::set('has', [
                     'next' => false,
                     'parent' => false,
                     'prev' => false
                 ]);
-                return \Shield::abort('404' . $path . '/' . $step);
+                $this->view('404' . $path . '/' . $current);
             }
-            \Config::set('trace', new \Anemon($title, ' &#x00B7; '));
-            \Config::set('has', [
+            $this->title($title);
+            $this->config::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
-            return \Shield::attach('pages' . $path . '/' . $step);
+            $this->status(200);
+            $this->view('pages' . $path . '/' . $current);
         }
     }
 }
 
-\Route::lot(['(.+)/(\d+)', '(.+)'], __NAMESPACE__ . "\\tag", 20);
+\Route::lot('*', __NAMESPACE__ . "\\tag", 20);

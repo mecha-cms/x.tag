@@ -2,6 +2,9 @@
 
 class Tag extends Page {
 
+    // Set pre-defined tag property
+    public static $data = [];
+
     public function __construct(string $path = null, array $lot = [], $prefix = []) {
         $p = trim($GLOBALS['URL']['path'], '/');
         if (Config::is('tags')) { // → `blog/tag/tag-slug`
