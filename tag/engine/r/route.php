@@ -1,23 +1,24 @@
 <?php namespace _\route;
 
-function tag() {
+function tag($form) {
+    global $config, $language, $url;
     $path = $this[0];
-    $current = $this->url->i;
+    $current = $url->i;
     // Load default page state(s)…
     $state = \Extend::state('tag');
     $i = $current - 1; // 0-based index…
     $chops = \explode('/', $path);
-    $sort = $this->config->tag('sort') ?? $this->config->page('sort') ?? [1, 'path'];
-    $chunk = $this->config->tag('chunk') ?? $this->config->page('chunk') ?? 5;
+    $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
+    $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
     $t = \array_pop($chops); // The tag slug
     $p = \array_pop($chops); // The tag path
     $has_tags = false;
     // Get tag ID from tag slug…
     if (null !== ($id = \From::tag($t))) {
-        $this->title([$this->language->tag, $this->config->title]);
+        $this->trace([$language->tag, $config->title]);
         if ($p === $state['path']) {
-            $this->config::set('sort', $sort);
-            $this->config::set('chunk', $chunk);
+            \Config::set('sort', $sort);
+            \Config::set('chunk', $chunk);
             $path = \implode('/', $chops);
             $r = PAGE . DS . $path;
             if ($file = \File::exist([
@@ -38,9 +39,8 @@ function tag() {
                     $has_tags = true;
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
-                if ($query = \l(\HTTP::get($this->config->q) ?? "")) {
+                if ($query = \l($form[$config->q] ?? "")) {
                     $query = \explode(' ', $query);
-                    $this->config::set('is.search', true);
                     $pages = $pages->is(function($v) use($query) {
                         $v = \str_replace('-', "", \Path::N($v));
                         foreach ($query as $q) {
@@ -50,6 +50,7 @@ function tag() {
                         }
                         return false;
                     });
+                    \Config::set('is.search', true);
                 }
             }
             if ($f = \File::exist([
@@ -58,7 +59,7 @@ function tag() {
             ])) {
                 $tag = new \Tag($f);
             }
-            $this->config::set([
+            \Config::set([
                 'is' => [
                     'error' => false,
                     'page' => false,
@@ -72,30 +73,30 @@ function tag() {
                 ]
             ]);
             $path = '/' . $path . '/' . $p . '/' . $t;
-            $title = [$tag->title, $this->language->tag, $this->config->title];
+            $trace = [$tag->title, $language->tag, $config->title];
             if ($query) {
-                \array_unshift($title, $this->language->search . ': ' . \implode(' ', $query));
+                \array_unshift($trace, $language->search . ': ' . \implode(' ', $query));
             }
             $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
             });
+            $tag->pager = $pager;
             $GLOBALS['page'] = $tag;
-            $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
             $GLOBALS['parent'] = $page;
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
-                $this->config::set('is.error', 404);
-                $this->config::set('has', [
+                \Config::set('is.error', 404);
+                \Config::set('has', [
                     'next' => false,
                     'parent' => false,
                     'prev' => false
                 ]);
                 $this->view('404' . $path . '/' . $current);
             }
-            $this->title($title);
-            $this->config::set('has', [
+            $this->trace($trace);
+            \Config::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
