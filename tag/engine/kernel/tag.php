@@ -15,7 +15,7 @@ class Tag extends Page {
         $p = strtr($p, DS, '/');
         $n = $path ? Path::N($path) : null;
         parent::__construct($path, array_replace_recursive([
-            'url' => $n ? $GLOBALS['URL']['$'] . ($p ? '/' . $p : "") . '/' . Extend::state('tag', 'path') . '/' . $n : null
+            'url' => $n ? $GLOBALS['URL']['$'] . ($p ? '/' . $p : "") . '/' . extend('tag')['path'] . '/' . $n : null
         ], $lot), $prefix);
     }
 

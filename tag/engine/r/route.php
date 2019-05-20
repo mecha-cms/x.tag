@@ -5,7 +5,7 @@ function tag($form) {
     $path = $this[0];
     $current = $url->i;
     // Load default page state(s)…
-    $state = \Extend::state('tag');
+    $state = \extend('tag');
     $i = $current - 1; // 0-based index…
     $chops = \explode('/', $path);
     $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
