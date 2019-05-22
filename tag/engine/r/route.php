@@ -15,7 +15,7 @@ function tag($form) {
     $has_tags = false;
     // Get tag ID from tag slug…
     if (null !== ($id = \From::tag($t))) {
-        $this->trace([$language->tag, $config->title]);
+        $GLOBALS['t'][] = $language->tag;
         if ($p === $state['path']) {
             \Config::set('sort', $sort);
             \Config::set('chunk', $chunk);
@@ -73,16 +73,16 @@ function tag($form) {
                 ]
             ]);
             $path = '/' . $path . '/' . $p . '/' . $t;
-            $trace = [$tag->title, $language->tag, $config->title];
+            $GLOBALS['t'][] = $tag->title;
             if ($query) {
-                \array_unshift($trace, $language->search . ': ' . \implode(' ', $query));
+                $GLOBALS['t'][] = $language->doSearch . ': ' . \implode(' ', $query);
             }
-            $pager = new \Pager\Pages($pages->vomit(), [$chunk, $i], $url . $path);
+            $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
             });
-            $tag->pager = $pager;
             $GLOBALS['page'] = $tag;
+            $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
             $GLOBALS['parent'] = $page;
             if ($pages->count() === 0) {
@@ -93,9 +93,9 @@ function tag($form) {
                     'parent' => false,
                     'prev' => false
                 ]);
+                $GLOBALS['t'][] = $language->isError;
                 $this->view('404' . $path . '/' . $current);
             }
-            $this->trace($trace);
             \Config::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
@@ -107,4 +107,4 @@ function tag($form) {
     }
 }
 
-\Route::lot('*', __NAMESPACE__ . "\\tag", 20);
+\Route::over('*', __NAMESPACE__ . "\\tag", 20);
