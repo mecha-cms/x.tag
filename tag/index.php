@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Set variable `$tag` to get the current tag
+
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'from.php';
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'get.php';
 require __DIR__ . DS . 'engine' . DS . 'plug' . DS . 'page.php';
