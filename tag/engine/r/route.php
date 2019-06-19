@@ -39,19 +39,6 @@ function tag($form) {
                     $has_tags = true;
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
-                if ($query = \l($form[$config->q] ?? "")) {
-                    $query = \explode(' ', $query);
-                    $pages = $pages->is(function($v) use($query) {
-                        $v = \str_replace('-', "", \Path::N($v));
-                        foreach ($query as $q) {
-                            if (\strpos($v, $q) !== false) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    });
-                    \Config::set('is.search', true);
-                }
             }
             if ($f = \File::exist([
                 TAG . DS . $t . '.page',
@@ -74,9 +61,6 @@ function tag($form) {
             ]);
             $path = '/' . $path . '/' . $p . '/' . $t;
             $GLOBALS['t'][] = $tag->title;
-            if ($query) {
-                $GLOBALS['t'][] = $language->doSearch . ': ' . \implode(' ', $query);
-            }
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i)->map(function($v) {
                 return new \Page($v);
