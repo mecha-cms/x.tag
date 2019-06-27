@@ -1,11 +1,13 @@
 <?php namespace _\route;
 
+$GLOBALS['tag'] = new \Tag;
+
 function tag($form) {
     global $config, $language, $url;
     $path = $this[0];
-    $current = $url->i;
+    $current = $url->i ?? 1;
     // Load default page state(s)…
-    $state = \extend('tag');
+    $state = \extension('tag');
     $i = $current - 1; // 0-based index…
     $chops = \explode('/', $path);
     $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
@@ -27,7 +29,7 @@ function tag($form) {
             ])) {
                 $page = new \Page($file);
             }
-            $pages = \Get::pages($r, 'page', $sort, 'path');
+            $pages = \Get::pages($r, 'page')->sort($sort);
             if ($pages->count() > 0) {
                 $pages = $pages->is(function($v) use(&$has_tags, $id) {
                     if (\is_file($k = \Path::F($v) . DS . 'kind.data')) {
@@ -62,13 +64,12 @@ function tag($form) {
             $path = '/' . $path . '/' . $p . '/' . $t;
             $GLOBALS['t'][] = $tag->title;
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $path);
-            $pages = $pages->chunk($chunk, $i)->map(function($v) {
-                return new \Page($v);
-            });
-            $GLOBALS['page'] = $tag;
+            $pages = $pages->chunk($chunk, $i);
+            $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
             $GLOBALS['parent'] = $page;
+            $GLOBALS['tag'] = $tag;
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
                 \Config::set('is.error', 404);

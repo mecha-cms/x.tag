@@ -1,6 +1,6 @@
 <?php
 
-class Comments extends Anemon {
+class Tags extends Anemon {
 
     public function getIterator() {
         $tags = [];
@@ -8,6 +8,14 @@ class Comments extends Anemon {
             $tags[] = new Tag($v);
         }
         return new \ArrayIterator($tags);
+    }
+
+    public function pluck(string $key, $or = null) {
+        $value = [];
+        foreach ($this->value as $v) {
+            $value[] = (new Tags($v))[$key] ?? $or;
+        }
+        return $value;
     }
 
     public function sort($sort = 1, $preserve_key = false) {
@@ -28,14 +36,6 @@ class Comments extends Anemon {
             $this->value = $value;
         }
         return $this;
-    }
-
-    public function take(string $key, $or = null) {
-        $value = [];
-        foreach ($this->value as $v) {
-            $value[] = (new Tags($v))[$key] ?? $or;
-        }
-        return $value;
     }
 
 }

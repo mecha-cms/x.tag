@@ -14,9 +14,9 @@ function tags() {
     $tags = [];
     foreach ($this->query as $v) {
         $v = \strtr($v, ' ', '-');
-        $tags[$v] = new \Tag(TAG . DS . $v . '.page');
+        $tags[] = TAG . DS . $v . '.page';
     }
-    return new \Anemon($tags);
+    return new \Tags($tags);
 }
 
 \Page::_('query', __NAMESPACE__ . "\\query");
