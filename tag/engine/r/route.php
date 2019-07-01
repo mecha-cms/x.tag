@@ -79,7 +79,7 @@ function tag($form) {
                     'prev' => false
                 ]);
                 $GLOBALS['t'][] = $language->isError;
-                $this->view('404' . $path . '/' . $current);
+                $this->content('404' . $path . '/' . $current);
             }
             \Config::set('has', [
                 'next' => !!$pager->next,
@@ -87,7 +87,7 @@ function tag($form) {
                 'prev' => !!$pager->prev
             ]);
             $this->status(200);
-            $this->view('pages' . $path . '/' . $current);
+            $this->content('pages' . $path . '/' . $current);
         }
     }
 }
