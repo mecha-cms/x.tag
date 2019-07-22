@@ -6,7 +6,8 @@ class Tag extends Page {
     public static $data = [];
 
     public function __construct(string $path = null, array $lot = [], $prefix = []) {
-        $p = trim($GLOBALS['URL']['path'], '/');
+        global $url;
+        $p = trim($url->path, '/');
         if (Config::is('tags')) { // → `blog/tag/tag-slug`
             $p = Path::D($p, 2);
         } else if (Config::is('page')) { // → `blog/page-slug`
@@ -15,7 +16,7 @@ class Tag extends Page {
         $p = strtr($p, DS, '/');
         $n = $path ? Path::N($path) : null;
         parent::__construct($path, array_replace_recursive([
-            'url' => $n ? $GLOBALS['URL']['$'] . ($p ? '/' . $p : "") . '/' . extension('tag')['path'] . '/' . $n : null
+            'url' => $n ? $url . ($p ? '/' . $p : "") . '/' . state('tag')['path'] . '/' . $n : null
         ], $lot), $prefix);
     }
 
