@@ -1,8 +1,8 @@
-<?php namespace _\page;
+<?php namespace _\lot\x\tag;
 
 function query() {
     $query = [];
-    foreach ((array) $this->kind as $v) {
+    foreach ((array) $this['kind'] as $v) {
         if ($slug = \To::tag($v)) {
             $query[] = \strtr($slug, '-', ' ');
         }
@@ -12,7 +12,7 @@ function query() {
 
 function tags() {
     $tags = [];
-    foreach ($this->query as $v) {
+    foreach ($this['query'] as $v) {
         $v = \strtr($v, ' ', '-');
         $tags[] = TAG . DS . $v . '.page';
     }

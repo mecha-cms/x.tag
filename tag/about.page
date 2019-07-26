@@ -3,7 +3,7 @@ title: Tag
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.8.3
+version: 1.8.4
 
 use:
   '.\lot\x\page': 1
@@ -15,12 +15,10 @@ This extension activates the tagging feature by utilizing the `kind` property on
 
 These page conditional statements are available:
 
- - `$site->has('tags')` → Return `true` if current page has at least one tag.
  - `$site->is('tags')` → `Return `true` if current items view is a tags view and is not empty.
 
 ### Class
 
 These HTML classes will be added to the `<html>` element that has a `class` attribute:
 
- - `has-tags` → Will be added if current page has at least one tag.
  - `is-tags` → Will be added if current items view is a tags view and is not empty.

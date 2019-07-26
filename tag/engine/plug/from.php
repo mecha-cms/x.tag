@@ -11,7 +11,7 @@ From::_('tag', function($slug) {
             $r . '.archive'
         ])) {
             // Get from embedded `id` data
-            return is_file($f) ? Page::apart(file_get_contents($f), 'id', true) : null;
+            return From::page(file_get_contents($f))['id'] ?? null;
         }
     }
     // Else…

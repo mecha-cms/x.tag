@@ -1,26 +1,24 @@
-<?php namespace _\route;
+<?php namespace _\lot\x\tag;
 
 $GLOBALS['tag'] = new \Tag;
 
-function tag($form) {
+function route($form) {
     global $config, $language, $url;
     $path = $this[0];
-    $current = $url->i ?? 1;
+    $i = ($url->i ?? 1) - 1;
     // Load default page state(s)…
     $state = \state('tag');
-    $i = $current - 1; // 0-based index…
-    $chops = \explode('/', $path);
     $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
     $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
+    $chops = \explode('/', $path);
     $t = \array_pop($chops); // The tag slug
     $p = \array_pop($chops); // The tag path
-    $has_tags = false;
     // Get tag ID from tag slug…
     if (null !== ($id = \From::tag($t))) {
         $GLOBALS['t'][] = $language->tag;
-        if ($p === $state['path']) {
-            \Config::set('sort', $sort);
-            \Config::set('chunk', $chunk);
+        if ($p === $state['/']) {
+            $config->sort = $sort;
+            $config->chunk = $chunk;
             $path = \implode('/', $chops);
             $r = PAGE . DS . $path;
             if ($file = \File::exist([
@@ -31,14 +29,13 @@ function tag($form) {
             }
             $pages = \Get::pages($r, 'page')->sort($sort);
             if ($pages->count() > 0) {
-                $pages = $pages->is(function($v) use(&$has_tags, $id) {
+                $pages = $pages->is(function($v) use($id) {
                     if (\is_file($k = \Path::F($v) . DS . 'kind.data')) {
                         $k = \e(\file_get_contents($k));
-                    } else if (!$k = \Page::apart(\file_get_contents($v), 'kind', true)) {
+                    } else if (!$k = (\From::page(\file_get_contents($v))['kind'] ?? null)) {
                         return false;
                     }
                     $k = ',' . \implode(',', (array) $k) . ',';
-                    $has_tags = true;
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
             }
@@ -53,6 +50,7 @@ function tag($form) {
                     'error' => false,
                     'page' => false,
                     'pages' => true,
+                    'tag' => false, // Never be `true`
                     'tags' => true
                 ],
                 'has' => [
@@ -72,14 +70,17 @@ function tag($form) {
             $GLOBALS['tag'] = $tag;
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
-                \Config::set('is.error', 404);
-                \Config::set('has', [
-                    'next' => false,
-                    'parent' => false,
-                    'prev' => false
+                \Config::set([
+                    'has' => [
+                        'next' => false,
+                        'parent' => false,
+                        'prev' => false
+                    ],
+                    'is' => ['error' => 404]
                 ]);
                 $GLOBALS['t'][] = $language->isError;
-                $this->content('404' . $path . '/' . $current);
+                $this->status(404);
+                $this->content('404' . $path . '/' . ($i + 1));
             }
             \Config::set('has', [
                 'next' => !!$pager->next,
@@ -87,9 +88,9 @@ function tag($form) {
                 'prev' => !!$pager->prev
             ]);
             $this->status(200);
-            $this->content('pages' . $path . '/' . $current);
+            $this->content('pages' . $path . '/' . ($i + 1));
         }
     }
 }
 
-\Route::over('*', __NAMESPACE__ . "\\tag", 20);
+\Route::over('*', __NAMESPACE__ . "\\route", 20);

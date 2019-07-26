@@ -10,7 +10,7 @@ To::_('tag', function($id) {
         }
         // Search for embedded `id` data
         foreach (glob(TAG . DS . '*.{page,archive}', GLOB_BRACE | GLOB_NOSORT) as $v) {
-            if (is_file($v) && $id === Page::apart(file_get_contents($v), 'id', true)) {
+            if (is_file($v) && $id === (From::page(file_get_contents($v))['id'] ?? null)) {
                 return pathinfo($v, PATHINFO_FILENAME);
             }
         }
