@@ -11,9 +11,9 @@ function route($form) {
     $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
     $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
     $chops = \explode('/', $path);
-    $t = \array_pop($chops); // The tag slug
+    $t = \array_pop($chops); // The tag name
     $p = \array_pop($chops); // The tag path
-    // Get tag ID from tag slug…
+    // Get tag ID from tag name…
     if (null !== ($id = \From::tag($t))) {
         $GLOBALS['t'][] = $language->tag;
         if ($p === $state['/']) {

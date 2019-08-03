@@ -5,9 +5,9 @@ class Tag extends Page {
     public function __construct(string $path = null, array $lot = []) {
         $url = $GLOBALS['url'];
         $p = trim($url->path, '/');
-        if (Config::is('tags')) { // → `./blog/tag/tag-slug`
+        if (Config::is('tags')) { // → `./blog/tag/tag-name`
             $p = dirname($p, 2);
-        } else if (Config::is('page')) { // → `./blog/page-slug`
+        } else if (Config::is('page')) { // → `./blog/page-name`
             $p = dirname($p);
         }
         $p = strtr($p, DS, '/');

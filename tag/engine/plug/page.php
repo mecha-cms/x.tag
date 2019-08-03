@@ -3,8 +3,8 @@
 function query() {
     $query = [];
     foreach ((array) $this['kind'] as $v) {
-        if ($slug = \To::tag($v)) {
-            $query[] = \strtr($slug, '-', ' ');
+        if ($name = \To::tag($v)) {
+            $query[] = \strtr($name, '-', ' ');
         }
     }
     return $query;
