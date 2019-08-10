@@ -5,5 +5,5 @@ function tag(...$v) {
 }
 
 function tags(...$v) {
-    return Get::tags(...$v);
+    return Tags::from(...$v);
 }

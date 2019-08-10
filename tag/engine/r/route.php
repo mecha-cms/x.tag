@@ -27,7 +27,7 @@ function route($form) {
             ])) {
                 $page = new \Page($file);
             }
-            $pages = \Get::pages($r, 'page')->sort($sort);
+            $pages = \Pages::from($r, 'page')->sort($sort);
             if ($pages->count() > 0) {
                 $pages = $pages->is(function($v) use($id) {
                     if (\is_file($k = \Path::F($v) . DS . 'kind.data')) {
@@ -87,7 +87,6 @@ function route($form) {
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
-            $this->status(200);
             $this->content('pages' . $path . '/' . ($i + 1));
         }
     }
