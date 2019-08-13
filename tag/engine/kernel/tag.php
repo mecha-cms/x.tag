@@ -2,7 +2,7 @@
 
 class Tag extends Page {
 
-    public function URL() {
+    public function URL(...$lot) {
         $url = $GLOBALS['url'];
         $p = trim($url->path, '/');
         if (Config::is('tags')) { // → `./blog/tag/tag-name`
