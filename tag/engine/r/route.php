@@ -6,31 +6,36 @@ function route($form) {
     global $config, $language, $url;
     $path = $this[0];
     $i = ($url->i ?? 1) - 1;
-    // Load default page state(s)…
-    $state = \state('tag');
-    $sort = $config->tag('sort') ?? $config->page('sort') ?? [1, 'path'];
-    $chunk = $config->tag('chunk') ?? $config->page('chunk') ?? 5;
     $chops = \explode('/', $path);
-    $t = \array_pop($chops); // The tag name
+    $n = \array_pop($chops); // The tag name
     $p = \array_pop($chops); // The tag path
     // Get tag ID from tag name…
-    if (null !== ($id = \From::tag($t))) {
+    if (null !== ($id = \From::tag($n))) {
         $GLOBALS['t'][] = $language->tag;
         if ($p === $state['/']) {
-            $config->sort = $sort;
-            $config->chunk = $chunk;
             $path = \implode('/', $chops);
-            $r = PAGE . DS . $path;
+            $r = \PAGE . \DS . $path;
             if ($file = \File::exist([
                 $r . '.page',
                 $r . '.archive'
             ])) {
                 $page = new \Page($file);
             }
-            $pages = \Pages::from($r, 'page')->sort($sort);
+            if ($file = \File::exist([
+                \TAG . \DS . $n . '.page',
+                \TAG . \DS . $n . '.archive'
+            ])) {
+                $tag = new \Tag($file);
+            }
+            \Config::set([
+                'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
+                'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
+                'sort' => $sort = $tag['sort'] ?? $page['sort'] ?? [1, 'path']
+            ]);
+            $pages = \Pages::from($r, 'page', $deep)->sort($sort);
             if ($pages->count() > 0) {
                 $pages = $pages->is(function($v) use($id) {
-                    if (\is_file($k = \Path::F($v) . DS . 'kind.data')) {
+                    if (\is_file($k = \Path::F($v) . \DS . 'kind.data')) {
                         $k = \e(\file_get_contents($k));
                     } else if (!$k = (\From::page(\file_get_contents($v))['kind'] ?? null)) {
                         return false;
@@ -38,12 +43,6 @@ function route($form) {
                     $k = ',' . \implode(',', (array) $k) . ',';
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
-            }
-            if ($f = \File::exist([
-                TAG . DS . $t . '.page',
-                TAG . DS . $t . '.archive'
-            ])) {
-                $tag = new \Tag($f);
             }
             \Config::set([
                 'is' => [
@@ -59,7 +58,7 @@ function route($form) {
                     'parent' => true
                 ]
             ]);
-            $path = '/' . $path . '/' . $p . '/' . $t;
+            $path = '/' . $path . '/' . $p . '/' . $n;
             $GLOBALS['t'][] = $tag->title;
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i);

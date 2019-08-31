@@ -14,7 +14,7 @@ function tags() {
     $tags = [];
     foreach ($this['query'] as $v) {
         $v = \strtr($v, ' ', '-');
-        $tags[] = TAG . DS . $v . '.page';
+        $tags[] = \TAG . \DS . $v . '.page';
     }
     return new \Tags($tags);
 }

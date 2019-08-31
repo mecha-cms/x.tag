@@ -1,6 +1,6 @@
 <?php
 
-// Store comment state to registry…
+// Store tag state to registry…
 $state = state('tag');
 if (!empty($state['tag'])) {
     // Prioritize default state
