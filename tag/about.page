@@ -3,7 +3,7 @@ title: Tag
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.8.7
+version: 1.8.8
 
 use:
   '.\lot\x\page': 1
@@ -11,14 +11,14 @@ use:
 
 This extension activates the tagging feature by utilizing the `kind` property on the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/slug` on every page to allow users to list all pages in the current folder by a tag.
 
-### Condition
+### Conditions
 
 These page conditional statements are available:
 
  - `$site->is('tags')` → `Return `true` if current items view is a tags view and is not empty.
 
-### Class
+### Classes
 
 These HTML classes will be added to the `<html>` element that has a `class` attribute:
 
- - `is-tags` → Will be added if current items view is a tags view and is not empty.
+ - `is:tags` → Will be added if current items view is a tags view and is not empty.

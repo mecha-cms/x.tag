@@ -12,7 +12,7 @@ function route($form) {
     // Get tag ID from tag name…
     if (null !== ($id = \From::tag($n))) {
         $GLOBALS['t'][] = $language->tag;
-        if ($p === $state['/']) {
+        if ($p === \state('tag')['/']) {
             $path = \implode('/', $chops);
             $r = \PAGE . \DS . $path;
             if ($file = \File::exist([
