@@ -3,16 +3,16 @@
 $GLOBALS['tag'] = new \Tag;
 
 function route($form) {
-    global $config, $language, $url;
+    global $language, $state, $url;
     $path = $this[0];
     $i = ($url->i ?? 1) - 1;
     $chops = \explode('/', $path);
     $n = \array_pop($chops); // The tag name
-    $p = \array_pop($chops); // The tag path
+    $p = '/' . \array_pop($chops); // The tag path
     // Get tag ID from tag name…
     if (null !== ($id = \From::tag($n))) {
         $GLOBALS['t'][] = $language->tag;
-        if ($p === \state('tag')['/']) {
+        if ($p === \State::get('x.tag.path')) {
             $path = \implode('/', $chops);
             $r = \PAGE . \DS . $path;
             if ($file = \File::exist([
@@ -27,7 +27,7 @@ function route($form) {
             ])) {
                 $tag = new \Tag($file);
             }
-            \Config::set([
+            \State::set([
                 'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
                 'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
                 'sort' => $sort = $tag['sort'] ?? $page['sort'] ?? [1, 'path']
@@ -44,7 +44,7 @@ function route($form) {
                     return \strpos($k, ',' . $id . ',') !== false;
                 });
             }
-            \Config::set([
+            \State::set([
                 'is' => [
                     'error' => false,
                     'page' => false,
@@ -58,7 +58,7 @@ function route($form) {
                     'parent' => true
                 ]
             ]);
-            $path = '/' . $path . '/' . $p . '/' . $n;
+            $path = '/' . $path . $p . '/' . $n;
             $GLOBALS['t'][] = $tag->title;
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $path);
             $pages = $pages->chunk($chunk, $i);
@@ -69,7 +69,7 @@ function route($form) {
             $GLOBALS['tag'] = $tag;
             if ($pages->count() === 0) {
                 // Greater than the maximum step or less than `1`, abort!
-                \Config::set([
+                \State::set([
                     'has' => [
                         'next' => false,
                         'parent' => false,
@@ -81,7 +81,7 @@ function route($form) {
                 $this->status(404);
                 $this->content('404' . $path . '/' . ($i + 1));
             }
-            \Config::set('has', [
+            \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev

@@ -3,7 +3,7 @@ title: Tag
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.8.8
+version: 1.9.0
 
 use:
   '.\lot\x\page': 1
