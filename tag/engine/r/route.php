@@ -5,7 +5,7 @@ $GLOBALS['tag'] = new \Tag;
 function route($form) {
     global $language, $state, $url;
     $path = $this[0];
-    $i = ($url->i ?? 1) - 1;
+    $i = ($url['i'] ?? 1) - 1;
     $chops = \explode('/', $path);
     $n = \array_pop($chops); // The tag name
     $p = '/' . \array_pop($chops); // The tag path
