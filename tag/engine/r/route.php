@@ -3,7 +3,7 @@
 $GLOBALS['tag'] = new \Tag;
 
 function route($form) {
-    global $language, $state, $url;
+    global $state, $url;
     $path = $this[0];
     $i = ($url['i'] ?? 1) - 1;
     $chops = \explode('/', $path);
@@ -11,7 +11,7 @@ function route($form) {
     $p = '/' . \array_pop($chops); // The tag path
     // Get tag ID from tag name…
     if (null !== ($id = \From::tag($n))) {
-        $GLOBALS['t'][] = $language->tag;
+        $GLOBALS['t'][] = \i('Tag');
         if ($p === \State::get('x.tag.path')) {
             $path = \implode('/', $chops);
             $r = \PAGE . \DS . $path;
@@ -77,7 +77,7 @@ function route($form) {
                     ],
                     'is' => ['error' => 404]
                 ]);
-                $GLOBALS['t'][] = $language->isError;
+                $GLOBALS['t'][] = \i('Error');
                 $this->status(404);
                 $this->content('404' . $path . '/' . ($i + 1));
             }
