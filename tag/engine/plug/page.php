@@ -12,9 +12,9 @@ function query() {
 
 function tags() {
     $tags = [];
-    foreach ($this['query'] as $v) {
+    foreach ($this->query() as $v) {
         $v = \strtr($v, ' ', '-');
-        $tags[] = \TAG . \DS . $v . '.page';
+        $tags[$v] = \TAG . \DS . $v . '.page';
     }
     return new \Tags($tags);
 }
