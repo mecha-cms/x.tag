@@ -32,6 +32,7 @@ if ($_['content'] === 'page.page') {
     }
     $GLOBALS['_']['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['page']['lot']['fields']['lot']['tags'] = [
         'type' => 'Query',
+        'state' => ['max' => 10],
         'name' => 'data[kind]',
         'value' => (new Page($_['f']))->query,
         'width' => true,
