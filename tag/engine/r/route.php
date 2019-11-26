@@ -7,7 +7,7 @@ function route($any, $name) {
     $i = ($url['i'] ?? 1) - 1;
     $path = \trim(\State::get('x.tag.path'), '/');
     if (null !== ($id = \From::tag($name))) {
-        $r = \PAGE . \DS . $any;
+        $r = \LOT . \DS . 'page' . \DS . $any;
         if ($file = \File::exist([
             $r . '.page',
             $r . '.archive'
@@ -15,8 +15,8 @@ function route($any, $name) {
             $page = new \Page($file);
         }
         if ($file = \File::exist([
-            \TAG . \DS . $name . '.page',
-            \TAG . \DS . $name . '.archive'
+            \LOT . \DS . 'tag' . \DS . $name . '.page',
+            \LOT . \DS . 'tag' . \DS . $name . '.archive'
         ])) {
             $tag = new \Tag($file);
         }
