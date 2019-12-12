@@ -7,6 +7,7 @@ function query() {
             $query[] = \strtr($name, '-', ' ');
         }
     }
+    \sort($query);
     return $query;
 }
 
@@ -16,7 +17,7 @@ function tags() {
         $v = \strtr($v, ' ', '-');
         $tags[$v] = \LOT . \DS . 'tag' . \DS . $v . '.page';
     }
-    return new \Tags($tags);
+    return (new \Tags($tags))->sort([1, 'title']);
 }
 
 \Page::_('query', __NAMESPACE__ . "\\query");
