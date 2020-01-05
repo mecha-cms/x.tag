@@ -51,6 +51,7 @@ function route($any, $name) {
                 'parent' => true
             ]
         ]);
+        $GLOBALS['t'][] = \i('Tag');
         $GLOBALS['t'][] = $tag->title;
         $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $any . '/' . $path . '/' . $name);
         $pages = $pages->chunk($chunk, $i);
