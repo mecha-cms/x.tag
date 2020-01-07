@@ -27,7 +27,7 @@ function route($any, $name) {
         ]);
         $pages = \Pages::from($r, 'page', $deep)->sort($sort);
         if ($pages->count() > 0) {
-            $pages = $pages->is(function($v) use($id) {
+            $pages->lot($pages->is(function($v) use($id) {
                 if (\is_file($k = \Path::F($v) . \DS . 'kind.data')) {
                     $k = \e(\file_get_contents($k));
                 } else if (!$k = (\From::page(\file_get_contents($v))['kind'] ?? null)) {
@@ -35,7 +35,7 @@ function route($any, $name) {
                 }
                 $k = ',' . \implode(',', (array) $k) . ',';
                 return false !== \strpos($k, ',' . $id . ',');
-            });
+            })->get());
         }
         \State::set([
             'is' => [
