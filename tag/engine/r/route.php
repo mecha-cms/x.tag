@@ -5,7 +5,7 @@ $GLOBALS['tag'] = new \Tag;
 function route($any, $name) {
     extract($GLOBALS, \EXTR_SKIP);
     $i = ($url['i'] ?? 1) - 1;
-    $path = \trim(\State::get('x.tag.path'), '/');
+    $path = \State::get('x.tag.path') ?? '/tag';
     if (null !== ($id = \From::tag($name))) {
         $r = \LOT . \DS . 'page' . \DS . $any;
         if ($file = \File::exist([
@@ -53,7 +53,7 @@ function route($any, $name) {
         ]);
         $GLOBALS['t'][] = \i('Tag');
         $GLOBALS['t'][] = $tag->title;
-        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $any . '/' . $path . '/' . $name);
+        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . '/' . $any . $path . '/' . $name);
         $pages = $pages->chunk($chunk, $i);
         $GLOBALS['page'] = $page;
         $GLOBALS['pager'] = $pager;
@@ -72,14 +72,14 @@ function route($any, $name) {
             ]);
             $GLOBALS['t'][] = \i('Error');
             $this->status(404);
-            $this->view('404/' . $any . '/' . $path . '/' . $name . '/' . ($i + 1));
+            $this->view('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
         }
         \State::set('has', [
             'next' => !!$pager->next,
             'parent' => !!$pager->parent,
             'prev' => !!$pager->prev
         ]);
-        $this->view('pages/' . $any . '/' . $path . '/' . $name . '/' . ($i + 1));
+        $this->view('pages/' . $any . $path . '/' . $name . '/' . ($i + 1));
     }
     \State::set([
         'has' => [
@@ -91,7 +91,7 @@ function route($any, $name) {
     ]);
     $GLOBALS['t'][] = \i('Error');
     $this->status(404);
-    $this->view('404/' . $any . '/' . $path . '/' . $name . '/' . ($i + 1));
+    $this->view('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
 }
 
-\Route::set('*/' . \trim(\State::get('x.tag.path'), '/') . '/:name', 200, __NAMESPACE__ . "\\route", 10);
+\Route::set('*' . (\State::get('x.tag.path') ?? '/tag') . '/:name', 200, __NAMESPACE__ . "\\route", 10);
