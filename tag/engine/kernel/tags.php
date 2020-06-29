@@ -2,8 +2,10 @@
 
 class Tags extends Pages {
 
+    public $page = null; // The parent page
+
     public function page(string $path) {
-        return new Tag($path);
+        return new Tag($path, ['page' => $this->page]);
     }
 
     public static function from(...$lot) {
