@@ -1,6 +1,6 @@
 <?php
 
-class tags extends Pages {
+class Tags extends Pages {
 
     public function page(string $path) {
         return new Tag($path);
