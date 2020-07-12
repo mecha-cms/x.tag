@@ -4,6 +4,10 @@ Tag Extension for Mecha
 Release Notes
 -------------
 
+### 1.9.6
+
+ - Updated for Mecha 2.4.0.
+
 ### 1.9.5
 
  - Added `page` property to `Tags` to store the parent page instance.
