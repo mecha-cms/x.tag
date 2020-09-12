@@ -4,6 +4,10 @@ Tag Extension for Mecha
 Release Notes
 -------------
 
+### master
+
+ - Updated for Mecha 2.5.0.
+
 ### 1.9.6
 
  - Updated for Mecha 2.4.0.

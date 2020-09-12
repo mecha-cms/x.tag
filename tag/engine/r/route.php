@@ -77,15 +77,14 @@ function route($any, $name) {
                 'is' => ['error' => 404]
             ]);
             $GLOBALS['t'][] = \i('Error');
-            $this->status(404);
-            $this->view('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
+            $this->layout('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
         }
         \State::set('has', [
             'next' => !!$pager->next,
             'parent' => !!$pager->parent,
             'prev' => !!$pager->prev
         ]);
-        $this->view('pages/' . $any . $path . '/' . $name . '/' . ($i + 1));
+        $this->layout('pages/' . $any . $path . '/' . $name . '/' . ($i + 1));
     }
     \State::set([
         'has' => [
@@ -96,8 +95,7 @@ function route($any, $name) {
         'is' => ['error' => 404]
     ]);
     $GLOBALS['t'][] = \i('Error');
-    $this->status(404);
-    $this->view('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
+    $this->layout('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
 }
 
 \Route::set('*' . (\State::get('x.tag.path') ?? '/tag') . '/:name', 200, __NAMESPACE__ . "\\route", 10);

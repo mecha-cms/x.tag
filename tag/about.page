@@ -1,9 +1,10 @@
 ---
+
 title: Tag
 description: Page tags.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.9.6
+version: 1.10.0
 
 use:
   '.\lot\x\page': 1
@@ -13,7 +14,7 @@ This extension activates the tagging feature by utilizing the `kind` property on
 
 ### Working with Tags
 
-The official control panel extension can help you to automate everything. But, if you have to, you can still make this extension work even without the GUI feature. Before we start, you need to understand how this extension works.
+[Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But, if you have to, you can still make this extension work even without the GUI feature. Before we start, you need to understand how this extension works.
 
 #### Page Properties
 
