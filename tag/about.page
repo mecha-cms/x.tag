@@ -1,19 +1,19 @@
 ---
 title: Tag
-description: Page tags.
+description: List all pages in the current folder filtered by tag.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.10.0
+version: 1.10.1
 
 use:
   '.\lot\x\page': 1
 ...
 
-This extension activates the tagging feature by utilizing the `kind` property on the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/slug` on every page to allow users to list all pages in the current folder by a tag.
+This extension activates the tag feature by utilizing the `kind` property of the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/:name` on every page to allow users to list all pages in the current folder by a tag.
 
 ### Working with Tags
 
-[Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But, if you have to, you can still make this extension work even without the GUI feature. Before we start, you need to understand how this extension works.
+[Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But, if you have to, you can still make this extension work even without the GUI feature. Before we start, you need to know how this extension works.
 
 #### Page Properties
 
@@ -128,7 +128,7 @@ Page content goes here.
 
 These page conditional statements are available:
 
- - `$site->is('tags')` → `Return `true` if current items view is a tags view and is not empty.
+ - `$site->is('tags')` → Return `true` if current items view is a tags view and is not empty.
 
 ### Classes
 

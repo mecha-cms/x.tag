@@ -30,7 +30,7 @@ function route($any, $name) {
             $pages->lot($pages->is(function($v) use($id) {
                 if (\is_file($k = \Path::F($v) . \DS . 'kind.data')) {
                     $k = \e(\file_get_contents($k));
-                } else if (!$k = (\From::page(\file_get_contents($v))['kind'] ?? null)) {
+                } else if (!$k = (\From::page(\file_get_contents($v), true)['kind'] ?? null)) {
                     return false;
                 }
                 $k = ',' . \implode(',', (array) $k) . ',';

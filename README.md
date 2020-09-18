@@ -4,6 +4,10 @@ Tag Extension for Mecha
 Release Notes
 -------------
 
+### 1.10.1
+
+ - Small bug fixes.
+
 ### 1.10.0
 
  - Updated for Mecha 2.5.0.
