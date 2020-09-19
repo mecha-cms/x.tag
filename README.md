@@ -7,6 +7,7 @@ Release Notes
 ### 1.10.1
 
  - Small bug fixes.
+ - Added page offset at the end of the tag URL.
 
 ### 1.10.0
 
