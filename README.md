@@ -4,6 +4,10 @@ Tag Extension for Mecha
 Release Notes
 -------------
 
+### 1.10.2
+
+ - [@mecha-cms/mecha#96](https://github.com/mecha-cms/mecha/issues/96)
+
 ### 1.10.1
 
  - Small bug fixes.

@@ -1,11 +1,11 @@
-<?php namespace _\lot\x\tag;
+<?php namespace x\tag;
 
 $GLOBALS['tag'] = new \Tag;
 
 function route($any, $name) {
     extract($GLOBALS, \EXTR_SKIP);
     $i = ($url['i'] ?? 1) - 1;
-    $path = \State::get('x.tag.path') ?? '/tag';
+    $path = $state->x->tag->path ?? '/tag';
     if (null !== ($id = \From::tag($name))) {
         $r = \LOT . \DS . 'page' . \DS . $any;
         if ($file = \File::exist([
@@ -98,4 +98,4 @@ function route($any, $name) {
     $this->layout('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
 }
 
-\Route::set('*' . (\State::get('x.tag.path') ?? '/tag') . '/:name', 200, __NAMESPACE__ . "\\route", 10);
+\Route::set('*' . ($state->x->tag->path ?? '/tag') . '/:name', 200, __NAMESPACE__ . "\\route", 10);

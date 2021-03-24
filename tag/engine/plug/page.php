@@ -1,4 +1,4 @@
-<?php namespace _\lot\x\tag;
+<?php namespace x\tag;
 
 function query() {
     $query = [];
