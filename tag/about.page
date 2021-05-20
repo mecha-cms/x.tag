@@ -3,7 +3,7 @@ title: Tag
 description: List all pages in the current folder filtered by tag.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.10.2
+version: 1.11.0
 
 use:
   '.\lot\x\page': 1
@@ -123,6 +123,10 @@ Page content goes here.
 ~~~
 
 ---
+
+### Variables
+
+A global variable `$tag` will be available in tags page mode. This variable is an instance of the `Tag` class which you can use to get the current tag details.
 
 ### Conditions
 

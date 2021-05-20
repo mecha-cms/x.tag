@@ -1,39 +1,21 @@
 <?php namespace x\tag;
 
-$GLOBALS['tag'] = new \Tag;
-
 function route($any, $name) {
     extract($GLOBALS, \EXTR_SKIP);
     $i = ($url['i'] ?? 1) - 1;
     $path = $state->x->tag->path ?? '/tag';
     if (null !== ($id = \From::tag($name))) {
-        $r = \LOT . \DS . 'page' . \DS . $any;
-        if ($file = \File::exist([
-            $r . '.page',
-            $r . '.archive'
-        ])) {
-            $page = new \Page($file);
-        }
-        if ($file = \File::exist([
-            \LOT . \DS . 'tag' . \DS . $name . '.page',
-            \LOT . \DS . 'tag' . \DS . $name . '.archive'
-        ])) {
-            $tag = new \Tag($file);
-        }
+        $page = $tag->page ?? new \Page;
         \State::set([
             'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
             'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
             'sort' => $sort = $tag['sort'] ?? $page['sort'] ?? [1, 'path']
         ]);
-        $pages = \Pages::from($r, 'page', $deep)->sort($sort);
+        $pages = \Pages::from(\LOT . \DS . 'page' . \DS . $any, 'page', $deep)->sort($sort);
         if ($pages->count() > 0) {
             $pages->lot($pages->is(function($v) use($id) {
-                if (\is_file($k = \Path::F($v) . \DS . 'kind.data')) {
-                    $k = \e(\file_get_contents($k));
-                } else if (!$k = (\From::page(\file_get_contents($v), true)['kind'] ?? null)) {
-                    return false;
-                }
-                $k = ',' . \implode(',', (array) $k) . ',';
+                $page = new \Page($v);
+                $k = ',' . \implode(',', (array) $page->kind) . ',';
                 return false !== \strpos($k, ',' . $id . ',');
             })->get());
         }
@@ -65,7 +47,6 @@ function route($any, $name) {
         $GLOBALS['pager'] = $pager;
         $GLOBALS['pages'] = $pages;
         $GLOBALS['parent'] = $page;
-        $GLOBALS['tag'] = $tag;
         if (0 === $pages->count()) {
             // Greater than the maximum step or less than `1`, abort!
             \State::set([
@@ -98,4 +79,4 @@ function route($any, $name) {
     $this->layout('404/' . $any . $path . '/' . $name . '/' . ($i + 1));
 }
 
-\Route::set('*' . ($state->x->tag->path ?? '/tag') . '/:name', 200, __NAMESPACE__ . "\\route", 10);
+\Route::set('*' . ($state->x->tag->path ?? '/tag') . '/:tag', 200, __NAMESPACE__ . "\\route", 10);

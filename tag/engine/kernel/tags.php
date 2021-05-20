@@ -5,7 +5,9 @@ class Tags extends Pages {
     public $page = null; // The parent page
 
     public function page(string $path) {
-        return new Tag($path, ['page' => $this->page]);
+        $tag = new Tag($path);
+        $tag->page = $this->page;
+        return $tag;
     }
 
     public static function from(...$lot) {

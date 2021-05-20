@@ -4,14 +4,19 @@ Tag Extension for Mecha
 Release Notes
 -------------
 
+### 1.11.0
+
+ - Added `page` property to the `Tag` class as well to store the parent page instance.
+ - Preferred `$tag->link` over `$tag->url`.
+
 ### 1.10.2
 
  - [@mecha-cms/mecha#96](https://github.com/mecha-cms/mecha/issues/96)
 
 ### 1.10.1
 
- - Small bug fixes.
  - Added page offset at the end of the tag URL.
+ - Small bug fixes.
 
 ### 1.10.0
 
@@ -31,8 +36,8 @@ Release Notes
 
 ### 1.9.3
 
- - Fixed missing “Tag” title.
  - Fixed bug for tags page.
+ - Fixed missing “Tag” title.
 
 ### 1.9.2
 
