@@ -21,12 +21,13 @@ if (
     ])
 ) {
     $tag = new Tag($file);
-    $page = LOT . DS . 'page' . implode(DS, $chops);
+    // $tag->page = null;
+    $folder = LOT . DS . 'page' . implode(DS, $chops);
     if ($page = File::exist([
-        $page . '.archive',
-        $page . '.page'
+        $folder . '.archive',
+        $folder . '.page'
     ])) {
-        $tag->page = new Page($page);
+        $tag->parent = new Page($page);
     }
     $GLOBALS['tag'] = $tag;
     require __DIR__ . DS . 'engine' . DS . 'r' . DS . 'route.php';

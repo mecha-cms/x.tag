@@ -19,11 +19,12 @@ function tags() {
     }
     $tags = new \Tags($tags);
     $folder = \dirname($this->path);
+    $tags->page = $this;
     if ($page = \File::exist([
         $folder . '.archive',
         $folder . '.page'
     ])) {
-        $tags->page = new \Page($page);
+        $tags->parent = new \Page($page);
     }
     return $tags->sort([1, 'title']);
 }

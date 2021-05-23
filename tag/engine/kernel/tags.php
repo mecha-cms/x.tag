@@ -2,11 +2,13 @@
 
 class Tags extends Pages {
 
-    public $page = null; // The parent page
+    public $page = null;
+    public $parent = null;
 
     public function page(string $path) {
         $tag = new Tag($path);
         $tag->page = $this->page;
+        $tag->parent = $this->parent;
         return $tag;
     }
 
