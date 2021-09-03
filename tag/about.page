@@ -3,13 +3,13 @@ title: Tag
 description: List all pages in the current folder filtered by tag.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.11.1
+version: 1.11.2
 
 use:
   '.\lot\x\page': 1
 ...
 
-This extension activates the tag feature by utilizing the `kind` property of the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/:name` on every page to allow users to list all pages in the current folder by a tag.
+This extension activates the tag feature by utilizing the `kind` property of the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/:tag` on every page to allow users to list all pages in the current folder by a tag.
 
 ### Working with Tags
 
@@ -17,7 +17,7 @@ This extension activates the tag feature by utilizing the `kind` property of the
 
 #### Page Properties
 
-**First**, get to know that this extension adds `query` and `tags` properties to the page only if the page contains `kind` property that is not empty:
+Get to know that this extension adds `query` and `tags` properties to the page only if the page contains `kind` property that is not empty:
 
 ~~~ .php
 $page = Page::__set_state([
@@ -30,22 +30,22 @@ $page = Page::__set_state([
             …
             …
             'id' => 1,
-            'name' => 'foo',
-            'url' => 'http://127.0.0.1/tag/foo'
+            'link' => 'http://127.0.0.1/tag/foo/1',
+            'name' => 'foo'
         ]),
         'bar' => Tag::__set_state([
             …
             …
             'id' => 2,
-            'name' => 'bar',
-            'url' => 'http://127.0.0.1/tag/bar'
+            'link' => 'http://127.0.0.1/tag/bar/1',
+            'name' => 'bar'
         ]),
         'baz' => Tag::__set_state([
             …
             …
             'id' => 3,
-            'name' => 'baz',
-            'url' => 'http://127.0.0.1/tag/baz'
+            'link' => 'http://127.0.0.1/tag/baz/1',
+            'name' => 'baz'
         ])
     ])
 ]);
@@ -57,7 +57,7 @@ $page = Page::__set_state([
 
 #### File Structure
 
-**Second**, writing a tag file is the same as writing a page file. The only difference is that you must write the `id` property separately from the page:
+Writing a tag file is the same as writing a page file. The only difference is that you must write the `id` property separately from the page:
 
 ~~~ .txt
 .\
@@ -76,7 +76,7 @@ $page = Page::__set_state([
 
 #### File Content
 
-**Third**, make sure to specify a unique number for each `id.data` file. These numbers, then will be used to connect the tag file with the `kind` property on every page.
+Make sure to specify a unique number for each `id.data` file. These numbers, then will be used to connect the tag file with the `kind` property on every page.
 
 Here’s an example of a tag file content:
 
@@ -91,7 +91,7 @@ Long description about this tag.
 
 #### Connections
 
-**Fourth**, to connect between tags with the current page, create a `kind.data` file in the corresponding folder, containing a list of tag’s ID written in a valid JSON format:
+To connect between tags with the current page, create a `kind.data` file in the corresponding folder, containing a list of tag’s ID written in a valid JSON format:
 
 ~~~ .txt
 .\
@@ -108,7 +108,7 @@ Example content of `kind.data` file:
 [1, 2, 3]
 ~~~
 
-You can actually insert the `kind` property on the page header, but this method is a little inefficient in terms of performance:
+You can actually insert the `kind` property in the page header, but this method is a little inefficient in terms of performance:
 
 ~~~ .yaml
 ---
@@ -127,6 +127,12 @@ Page content goes here.
 ### Variables
 
 A global variable `$tag` will be available in tags page mode. This variable is an instance of the `Tag` class which you can use to get the current tag details.
+
+~~~ .php
+if ($site->is('tags')) {
+    echo i('Current tag is %s.', [$tag->title]);
+}
+~~~
 
 ### Conditions
 
