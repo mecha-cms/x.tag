@@ -18,13 +18,13 @@ function tags() {
         $tags[$v] = \LOT . \DS . 'tag' . \DS . $v . '.page';
     }
     $tags = new \Tags($tags);
-    $folder = \dirname($this->path);
     $tags->page = $this;
-    if ($page = \File::exist([
+    $folder = \dirname($this->path);
+    if ($file = \File::exist([
         $folder . '.archive',
         $folder . '.page'
     ])) {
-        $tags->parent = new \Page($page);
+        $tags->parent = new \Page($file);
     }
     return $tags->sort([1, 'title']);
 }
