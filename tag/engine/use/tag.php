@@ -16,9 +16,35 @@ class Tag extends Page {
             return $v;
         }
         extract($GLOBALS, EXTR_SKIP);
-        $n = $this->exist ? Path::N($this->path) : null;
-        $path = $this->parent ? $this->parent->url : null;
-        return $n && $path ? $path . ($state->x->tag->path ?? '/tag') . '/' . $n . '/1' : null;
+        $name = $this->exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null;
+        $parent = $this->parent ? $this->parent->url : null;
+        return $name && $parent ? $parent . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . '/1' : null;
     }
 
 }
+
+function tag(...$v) {
+    return new Tag(...$v);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

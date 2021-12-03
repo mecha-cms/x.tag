@@ -13,8 +13,12 @@ class Tags extends Pages {
     }
 
     public static function from(...$lot) {
-        $lot[0] = $lot[0] ?? LOT . DS . 'tag';
+        $lot[0] = $lot[0] ?? LOT . D . 'tag';
         return parent::from(...$lot);
     }
 
+}
+
+function tags(...$v) {
+    return Tags::from(...$v);
 }

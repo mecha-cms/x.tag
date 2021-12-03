@@ -1,3 +1,3 @@
 <?php
 
-return ['path' => '/tag'];
+return ['route' => '/tag'];
