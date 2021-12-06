@@ -46,7 +46,7 @@ namespace x\tag {
         }
         $i = ((int) ($i ?? 1)) - 1;
         if (null !== ($id = \From::tag($name))) {
-            $page = $tag->page ?? new \Page;
+            $page = $tag->parent ?? new \Page;
             \State::set([
                 'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
                 'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
@@ -77,7 +77,7 @@ namespace x\tag {
             $GLOBALS['t'][] = \i('Tag');
             $GLOBALS['t'][] = $tag->title;
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
-                'link' => $url . '/' . $path . '/' . $route . '/' . $name
+                'link' => $url . '/' . $path . '/' . $route . '/' . $name . (1 === $i ? '/' . $i : "")
             ]);
             // Set proper parent link
             if (0 === $i) {
