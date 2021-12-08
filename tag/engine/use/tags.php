@@ -18,7 +18,3 @@ class Tags extends Pages {
     }
 
 }
-
-function tags(...$v) {
-    return Tags::from(...$v);
-}
