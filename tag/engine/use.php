@@ -183,7 +183,6 @@ namespace x\tag {
         \Hook::set('route.page', function($path, $query, $hash) use($route) {
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
-                \State::set('is.error', false);
                 \Hook::fire('route.tag', [$name, $path . '/' . $i, $query, $hash]);
             }
         }, 10);
