@@ -39,7 +39,9 @@ namespace {
 
 namespace x\tag {
     function route($name, $path, $query, $hash) {
+        \status(200);
         extract($GLOBALS, \EXTR_SKIP);
+        $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
             [$any, $path, $i] = $m;
@@ -95,10 +97,15 @@ namespace x\tag {
                         'parent' => false,
                         'prev' => false
                     ],
-                    'is' => ['error' => 404]
+                    'is' => [
+                        'error' => 404,
+                        'page' => true,
+                        'pages' => false
+                    ]
                 ]);
                 $GLOBALS['t'][] = \i('Error');
-                \Hook::fire('layout', ['404/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
+                \status(404);
+                \Hook::fire('layout', ['error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
             }
             \State::set('has', [
                 'next' => !!$pager->next,
@@ -113,10 +120,15 @@ namespace x\tag {
                 'parent' => false,
                 'prev' => false
             ],
-            'is' => ['error' => 404]
+            'is' => [
+                'error' => 404,
+                'page' => true,
+                'pages' => false
+            ]
         ]);
         $GLOBALS['t'][] = \i('Error');
-        \Hook::fire('layout', ['404/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
+        \status(404);
+        \Hook::fire('layout', ['error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
     }
     function query() {
         $query = [];
