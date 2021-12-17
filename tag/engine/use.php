@@ -79,12 +79,10 @@ namespace x\tag {
             $GLOBALS['t'][] = \i('Tag');
             $GLOBALS['t'][] = $tag->title;
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
-                'link' => $url . '/' . $path . '/' . $route . '/' . $name . (1 === $i ? '/' . $i : "")
+                'link' => $url . '/' . $path . '/' . $route . '/' . $name
             ]);
             // Set proper parent link
-            if (0 === $i) {
-                $pager->parent = $page;
-            }
+            $pager->parent = $page;
             $pages = $pages->chunk($chunk, $i);
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
