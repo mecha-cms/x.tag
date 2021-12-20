@@ -2,7 +2,6 @@
 
 namespace x\tag {
     function route($name, $path, $query, $hash) {
-        \status(200);
         \extract($GLOBALS, \EXTR_SKIP);
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
@@ -73,6 +72,7 @@ namespace x\tag {
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
+            \status(200);
             \Hook::fire('layout', ['pages/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
         }
         \State::set([
