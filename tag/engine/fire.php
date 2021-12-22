@@ -140,12 +140,12 @@ namespace x\tag {
             $tag->parent = new \Page($page);
         }
         $GLOBALS['tag'] = $tag;
-        \Hook::set('route.tag', __NAMESPACE__ . "\\route", 20);
         \Hook::set('route.page', function($path, $query, $hash) use($route) {
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
                 \Hook::fire('route.tag', [$name, $path . '/' . $i, $query, $hash]);
             }
-        }, 10);
+        }, 90);
+        \Hook::set('route.tag', __NAMESPACE__ . "\\route", 100);
     }
 }
