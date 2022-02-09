@@ -127,7 +127,7 @@ namespace x\tag {
     }
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
-    $chops = \explode('/', $url->path);
+    $chops = \explode('/', $url->path ?? "");
     $i = \array_pop($chops);
     $tag = \array_pop($chops);
     $route = \trim($state->x->tag->route ?? 'tag', '/');
