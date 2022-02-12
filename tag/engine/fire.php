@@ -1,9 +1,9 @@
 <?php
 
 namespace x\tag {
-    function route($r, $path, $query, $hash) {
-        if (isset($r['content']) || isset($r['kick']) || isset($r['layout']) || isset($r['path'])) {
-            return $r;
+    function route($content, $path, $query, $hash, $r) {
+        if (null !== $content) {
+            return $content;
         }
         \extract($GLOBALS, \EXTR_SKIP);
         $name = $r['name'];
@@ -68,18 +68,14 @@ namespace x\tag {
                     ]
                 ]);
                 $GLOBALS['t'][] = \i('Error');
-                $r['layout'] = 'error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
-                $r['status'] = 404;
-                return $r;
+                return \Layout::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
             }
             \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
-            $r['layout'] = 'pages/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
-            $r['status'] = 200;
-            return $r;
+            return \Layout::pages($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 200);
         }
         \State::set([
             'has' => [
@@ -94,9 +90,7 @@ namespace x\tag {
             ]
         ]);
         $GLOBALS['t'][] = \i('Error');
-        $r['layout'] = 'error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
-        $r['status'] = 404;
-        return $r;
+        return \Layout::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
     }
     function query() {
         $query = [];
@@ -147,13 +141,13 @@ namespace x\tag {
             $tag->parent = new \Page($page);
         }
         $GLOBALS['tag'] = $tag;
-        \Hook::set('route.page', function($path, $query, $hash) use($route) {
+        \Hook::set('route.page', function($content, $path, $query, $hash) use($route) {
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
                 $r['name'] = $name;
-                return \Hook::fire('route.tag', [$r, $path . '/' . $i, $query, $hash]);
+                return \Hook::fire('route.tag', [$content, $any, $query, $hash, $r]);
             }
-            return $r;
+            return $content;
         }, 90);
         \Hook::set('route.tag', __NAMESPACE__ . "\\route", 100);
     }
