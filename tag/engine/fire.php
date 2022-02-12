@@ -2,7 +2,7 @@
 
 namespace x\tag {
     function route($r, $path, $query, $hash) {
-        if (isset($r['content']) || isset($r['kick'])) {
+        if (isset($r['content']) || isset($r['kick']) || isset($r['layout']) || isset($r['path'])) {
             return $r;
         }
         \extract($GLOBALS, \EXTR_SKIP);
@@ -68,7 +68,7 @@ namespace x\tag {
                     ]
                 ]);
                 $GLOBALS['t'][] = \i('Error');
-                $r['content'] = \Hook::fire('layout', ['error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
+                $r['layout'] = 'error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
                 $r['status'] = 404;
                 return $r;
             }
@@ -77,7 +77,7 @@ namespace x\tag {
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
-            $r['content'] = \Hook::fire('layout', ['pages/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
+            $r['layout'] = 'pages/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
             $r['status'] = 200;
             return $r;
         }
@@ -94,7 +94,7 @@ namespace x\tag {
             ]
         ]);
         $GLOBALS['t'][] = \i('Error');
-        $r['content'] = \Hook::fire('layout', ['error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1)]);
+        $r['layout'] = 'error/' . $path . '/' . $route . '/' . $name . '/' . ($i + 1);
         $r['status'] = 404;
         return $r;
     }
