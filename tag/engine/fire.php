@@ -22,7 +22,7 @@ namespace x\tag {
             ]);
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
             if ($pages->count() > 0) {
-                $pages->lot($pages->is(function($v) use($id) {
+                $pages->lot($pages->is(static function($v) use($id) {
                     $page = new \Page($v);
                     $k = ',' . \implode(',', (array) $page->kind) . ',';
                     return false !== \strpos($k, ',' . $id . ',');
@@ -145,7 +145,7 @@ namespace x\tag {
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
                 $r['name'] = $name;
-                return \Hook::fire('route.tag', [$content, $any, $query, $hash, $r]);
+                return \Hook::fire('route.tag', [$content, $path, $query, $hash, $r]);
             }
             return $content;
         }, 90);
