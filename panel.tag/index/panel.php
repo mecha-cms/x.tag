@@ -145,10 +145,13 @@ if (0 === strpos($_['type'] . '/', 'pages/tag/')) {
         $_['lot']['desk']['lot']['form']['lot'][0]['lot']['tasks']['lot']['page']['url'] = [
             'part' => 0,
             'query' => [
+                'chunk' => null,
+                'deep' => null,
                 'query' => null,
                 'stack' => null,
                 'tab' => null,
-                'type' => 'page/tag'
+                'type' => 'page/tag',
+                'x' => null
             ],
             'task' => 'set'
         ];
@@ -183,10 +186,13 @@ if (0 === strpos($_['type'] . '/', 'pages/tag/')) {
                                     'part' => 0,
                                     'path' => dirname($_['path']),
                                     'query' => [
+                                        'chunk' => null,
+                                        'deep' => null,
                                         'query' => null,
                                         'stack' => null,
                                         'tab' => null,
-                                        'type' => 'page/tag'
+                                        'type' => 'page/tag',
+                                        'x' => null
                                     ],
                                     'task' => 'set'
                                 ]
