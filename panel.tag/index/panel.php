@@ -1,5 +1,10 @@
 <?php
 
+// Disable this extension if `tag` extension is disabled or removed ;)
+if (!isset($state->x->tag)) {
+    return $_;
+}
+
 Hook::set('_', function($_) use($user) {
     if ('POST' === $_SERVER['REQUEST_METHOD'] && 0 === strpos($_['path'] . '/', 'tag/') && ($_['file'] || $_['folder'])) {
         $current = $_POST['data']['id'] ?? $_POST['page']['id'] ?? 0;
