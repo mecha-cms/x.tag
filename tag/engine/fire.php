@@ -68,14 +68,14 @@ namespace x\tag {
                     ]
                 ]);
                 $GLOBALS['t'][] = \i('Error');
-                return \Layout::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
+                return \Y::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
             }
             \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
                 'prev' => !!$pager->prev
             ]);
-            return \Layout::pages($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 200);
+            return \Y::pages($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 200);
         }
         \State::set([
             'has' => [
@@ -90,7 +90,7 @@ namespace x\tag {
             ]
         ]);
         $GLOBALS['t'][] = \i('Error');
-        return \Layout::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
+        return \Y::error($path . '/' . $route . '/' . $name . '/' . ($i + 1), [], 404);
     }
     function query() {
         $query = [];
