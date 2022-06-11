@@ -44,11 +44,11 @@ namespace x\tag {
             ]);
             $GLOBALS['t'][] = \i('Tag');
             $GLOBALS['t'][] = $tag->title;
-            $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
+            $pager = new \Pager\Pages($pages->get(), [$chunk, $i], new \Page(null, [
                 'link' => $url . '/' . $path . '/' . $route . '/' . $name
-            ]);
+            ]));
             // Set proper parent link
-            $pager->parent = $i > 0 ? (object) ['link' => $url . '/' . $path . '/' . $route . '/' . $name . '/1'] : $page;
+            $pager->parent = $i > 0 ? new \Page(null, ['link' => $url . '/' . $path . '/' . $route . '/' . $name . '/1']) : $page;
             $pages = $pages->chunk($chunk, $i);
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
@@ -110,13 +110,13 @@ namespace x\tag {
             $tags[$v] = \LOT . \D . 'tag' . \D . $v . '.page';
         }
         $tags = new \Tags($tags);
-        $tags->page = $this;
         $folder = \dirname($this->path);
-        if ($file = \exist([
+        $tags->page = $this;
+        if ($path = \exist([
             $folder . '.archive',
             $folder . '.page'
         ], 1)) {
-            $tags->parent = new \Page($file);
+            $tags->parent = new \Page($path);
         }
         return $tags->sort([1, 'title']);
     }
@@ -133,13 +133,13 @@ namespace x\tag {
         \LOT . \D . 'tag' . \D . $tag . '.page'
     ], 1))) {
         $tag = new \Tag($file);
-        // $tag->page = null;
         $folder = \LOT . \D . 'page' . \implode(\D, $chops);
-        if ($page = \exist([
+        // $tag->page = null;
+        if ($path = \exist([
             $folder . '.archive',
             $folder . '.page'
         ], 1)) {
-            $tag->parent = new \Page($page);
+            $tag->parent = new \Page($path);
         }
         $GLOBALS['tag'] = $tag;
         \Hook::set('route.page', function($content, $path, $query, $hash) use($route) {

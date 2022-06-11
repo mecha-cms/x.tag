@@ -5,7 +5,7 @@ From::_('tag', function($name) {
         $folder = LOT . D . 'tag' . D . $name;
         // Get from external `id` data
         if (is_file($file = $folder . D . 'id.data') && filesize($file) > 0) {
-            return (int) file_get_contents($file);
+            return (int) trim((string) fgets(fopen($file, 'r')));
         } else if ($file = exist([
             $folder . '.archive',
             $folder . '.page'
