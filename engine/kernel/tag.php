@@ -2,9 +2,6 @@
 
 class Tag extends Page {
 
-    public $page = null;
-    public $parent = null;
-
     public function link(...$lot) {
         if ($v = parent::link()) {
             return $v;
@@ -21,32 +18,22 @@ class Tag extends Page {
         if (!$this->exist()) {
             return null;
         }
-        if (!$page = $this->page) {
+        $path = $this->lot['page'] ?? null;
+        if (!is_string($path) || !is_file($path)) {
             return null;
         }
-        if (!$lot) {
-            return $page;
-        }
-        foreach ($lot as $k => $v) {
-            $page->{$k} = $v;
-        }
-        return $page;
+        return new Page($path, $lot);
     }
 
     public function parent(array $lot = []) {
         if (!$this->exist()) {
             return null;
         }
-        if (!$parent = $this->parent) {
+        $path = $this->lot['parent'] ?? null;
+        if (!is_string($path) || !is_file($path)) {
             return null;
         }
-        if (!$lot) {
-            return $parent;
-        }
-        foreach ($lot as $k => $v) {
-            $parent->{$k} = $v;
-        }
-        return $parent;
+        return new Page($path, $lot);
     }
 
 }

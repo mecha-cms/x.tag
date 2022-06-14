@@ -104,21 +104,20 @@ namespace x\tag {
         return $query;
     }
     function tags() {
+        $folder = \dirname($path = $this->path);
         $tags = [];
         foreach ($this->query() as $v) {
             $v = \strtr($v, ' ', '-');
-            $tags[$v] = \LOT . \D . 'tag' . \D . $v . '.page';
+            $tags[$v] = [
+                'page' => $path,
+                'parent' => \exist([
+                    $folder . '.archive',
+                    $folder . '.page'
+                ], 1) ?: null,
+                'path' => \LOT . \D . 'tag' . \D . $v . '.page'
+            ];
         }
-        $tags = new \Tags($tags);
-        $folder = \dirname($this->path);
-        $tags->page = $this;
-        if ($path = \exist([
-            $folder . '.archive',
-            $folder . '.page'
-        ], 1)) {
-            $tags->parent = new \Page($path);
-        }
-        return $tags->sort([1, 'title']);
+        return (new \Tags($tags))->sort([1, 'title']);
     }
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
@@ -132,21 +131,18 @@ namespace x\tag {
         \LOT . \D . 'tag' . \D . $tag . '.archive',
         \LOT . \D . 'tag' . \D . $tag . '.page'
     ], 1))) {
-        $tag = new \Tag($file);
         $folder = \LOT . \D . 'page' . \implode(\D, $chops);
-        // $tag->page = null;
-        if ($path = \exist([
-            $folder . '.archive',
-            $folder . '.page'
-        ], 1)) {
-            $tag->parent = new \Page($path);
-        }
-        $GLOBALS['tag'] = $tag;
+        $GLOBALS['tag'] = new \Tag($file, [
+            'parent' => \exist([
+                $folder . '.archive',
+                $folder . '.page'
+            ], 1) ?: null
+        ]);
         \Hook::set('route.page', function($content, $path, $query, $hash) use($route) {
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
                 $r['name'] = $name;
-                return \Hook::fire('route.tag', [$content, $path, $query, $hash, $r]);
+                return \Hook::fire('route.tag', [$content, $path . '/' . $i, $query, $hash, $r]);
             }
             return $content;
         }, 90);
