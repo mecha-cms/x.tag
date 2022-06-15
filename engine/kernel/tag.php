@@ -18,7 +18,7 @@ class Tag extends Page {
         if (!$this->exist()) {
             return null;
         }
-        $path = $this->lot['page'] ?? null;
+        $path = $this['page'] ?? null;
         if (!is_string($path) || !is_file($path)) {
             return null;
         }
@@ -29,7 +29,7 @@ class Tag extends Page {
         if (!$this->exist()) {
             return null;
         }
-        $path = $this->lot['parent'] ?? null;
+        $path = $this['parent'] ?? null;
         if (!is_string($path) || !is_file($path)) {
             return null;
         }
