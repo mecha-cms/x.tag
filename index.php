@@ -139,6 +139,7 @@ namespace x\tag {
             ], 1) ?: null
         ]);
         \Hook::set('route.page', function($content, $path, $query, $hash) use($route) {
+            // Return the route value to the native page route and move the tag route parameter to `name`
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
                 $r['name'] = $name;
