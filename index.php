@@ -22,7 +22,7 @@ namespace x\tag {
             ]);
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
             if ($pages->count() > 0) {
-                $pages->lot($pages->is(static function($v) use($id) {
+                $pages->lot($pages->is(static function ($v) use ($id) {
                     $page = new \Page($v);
                     $k = ',' . \implode(',', (array) $page->kind) . ',';
                     return false !== \strpos($k, ',' . $id . ',');
@@ -138,7 +138,7 @@ namespace x\tag {
                 $folder . '.page'
             ], 1) ?: null
         ]);
-        \Hook::set('route.page', function($content, $path, $query, $hash) use($route) {
+        \Hook::set('route.page', function ($content, $path, $query, $hash) use ($route) {
             // Return the route value to the native page route and move the tag route parameter to `name`
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $i] = $m;
