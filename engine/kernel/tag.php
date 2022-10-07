@@ -7,7 +7,7 @@ class Tag extends Page {
             return $v;
         }
         extract($GLOBALS, EXTR_SKIP);
-        $name = $this->exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null;
+        $name = $this->_exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null;
         if ($name && $parent = $this->parent) {
             return $parent->url . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . '/1';
         }
@@ -15,7 +15,7 @@ class Tag extends Page {
     }
 
     public function page(array $lot = []) {
-        if (!$this->exist()) {
+        if (!$this->_exist()) {
             return null;
         }
         $path = $this['page'] ?? null;
@@ -26,7 +26,7 @@ class Tag extends Page {
     }
 
     public function parent(array $lot = []) {
-        if (!$this->exist()) {
+        if (!$this->_exist()) {
             return null;
         }
         $path = $this['parent'] ?? null;

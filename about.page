@@ -21,39 +21,38 @@ This extension activates the tag feature by utilizing the `kind` property of the
 Get to know that this extension adds `query` and `tags` properties to the page only if the page contains `kind` property that is not empty:
 
 ~~~ .php
-$page = Page::__set_state([
+$page = Page::__construct([
     …
     …
-    'kind' => [1, 2, 3], // [^1]
-    'query' => ['foo', 'bar', 'baz'], // [^2]
-    'tags' => Tags::__set_state([ // [^3]
-        'foo' => Tag::__set_state([
-            …
-            …
-            'id' => 1,
-            'link' => 'http://127.0.0.1/tag/foo/1',
-            'name' => 'foo'
-        ]),
-        'bar' => Tag::__set_state([
+    // These numbers will be used as the tag ID.
+    'kind' => [1, 2, 3],
+    // These queries are generated automatically based on the available tags.
+    'query' => ['bar', 'baz', 'foo'],
+    // These rich tags data are also generated based on the available tags.
+    'tags' => Tags::__construct([
+        'bar' => Tag::__construct([
             …
             …
             'id' => 2,
             'link' => 'http://127.0.0.1/tag/bar/1',
             'name' => 'bar'
         ]),
-        'baz' => Tag::__set_state([
+        'baz' => Tag::__construct([
             …
             …
             'id' => 3,
             'link' => 'http://127.0.0.1/tag/baz/1',
             'name' => 'baz'
+        ]),
+        'foo' => Tag::__construct([
+            …
+            …
+            'id' => 1,
+            'link' => 'http://127.0.0.1/tag/foo/1',
+            'name' => 'foo'
         ])
     ])
 ]);
-
-// [^1]: These numbers will be used as the tag ID.
-// [^2]: These queries are generated automatically based on the available tags.
-// [^3]: These rich tags data are also generated based on the available tags.
 ~~~
 
 #### File Structure
@@ -65,11 +64,11 @@ Writing a tag file is the same as writing a page file. The only difference is th
 └── lot\
     └── tag\
         ├── bar\
-        │   └── id.data
+        │   └── id.data ✔
         ├── baz\
-        │   └── id.data
+        │   └── id.data ✔
         ├── foo\
-        │   └── id.data
+        │   └── id.data ✔
         ├── bar.page
         ├── baz.page
         └── foo.page
@@ -85,6 +84,7 @@ Here’s an example of a tag file content:
 ---
 title: Tag Name
 description: Short description about this tag.
+type: Markdown
 ...
 
 Long description about this tag.
@@ -99,7 +99,7 @@ To connect between tags with the current page, create a `kind.data` file in the 
 └── lot\
     └── page\
         ├── test-page\
-        │   └── kind.data
+        │   └── kind.data ✔
         └── test-page.page
 ~~~
 
