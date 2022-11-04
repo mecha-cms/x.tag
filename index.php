@@ -10,9 +10,9 @@ namespace x\tag {
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
-            [$any, $path, $i] = $m;
+            [$any, $path, $part] = $m;
         }
-        $i = ((int) ($i ?? 1)) - 1;
+        $part = ((int) ($part ?? 1)) - 1;
         if (null !== ($id = \From::tag($name))) {
             $page = $tag->parent ?? new \Page;
             \State::set([
@@ -44,12 +44,10 @@ namespace x\tag {
             ]);
             $GLOBALS['t'][] = \i('Tag');
             $GLOBALS['t'][] = $tag->title;
-            $pager = new \Pager\Pages($pages->get(), [$chunk, $i], new \Page(null, [
-                'link' => $url . '/' . $path . '/' . $route . '/' . $name
-            ]));
-            // Set proper parent link
-            $pager->parent = $i > 0 ? new \Page(null, ['link' => $url . '/' . $path . '/' . $route . '/' . $name . '/1']) : $page;
-            $pages = $pages->chunk($chunk, $i);
+            $pager = new \Pager($pages);
+            $pager->path = $path . '/' . $route . '/' . $name;
+            $pager = $pager->chunk($chunk, $part + 1);
+            $pages = $pages->chunk($chunk, $part);
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
@@ -73,7 +71,7 @@ namespace x\tag {
             \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$pager->parent,
-                'part' => $i + 1,
+                'part' => $part + 1,
                 'prev' => !!$pager->prev
             ]);
             return ['pages', [], 200];
@@ -122,7 +120,7 @@ namespace x\tag {
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
     $chops = \explode('/', $url->path ?? "");
-    $i = \array_pop($chops);
+    $part = \array_pop($chops);
     $tag = \array_pop($chops);
     $route = \trim($state->x->tag->route ?? 'tag', '/');
     $prefix = \array_pop($chops);
@@ -141,9 +139,9 @@ namespace x\tag {
         \Hook::set('route.page', function ($content, $path, $query, $hash) use ($route) {
             // Return the route value to the native page route and move the tag route parameter to `name`
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
-                [$any, $path, $name, $i] = $m;
+                [$any, $path, $name, $part] = $m;
                 $r['name'] = $name;
-                return \Hook::fire('route.tag', [$content, $path . '/' . $i, $query, $hash, $r]);
+                return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash, $r]);
             }
             return $content;
         }, 90);

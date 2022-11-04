@@ -2,8 +2,8 @@
 
 class Tags extends Pages {
 
-    public function page(string $path = null, array $lot = []) {
-        return new Tag($path, $lot);
+    public function page(...$lot) {
+        return Tag::from(...$lot);
     }
 
     public static function from(...$lot) {
