@@ -1,12 +1,12 @@
 <?php
 
 namespace x\tag {
-    function route($content, $path, $query, $hash, $r) {
+    function route($content, $path, $query, $hash) {
         if (null !== $content) {
             return $content;
         }
         \extract($GLOBALS, \EXTR_SKIP);
-        $name = $r['name'];
+        $name = \From::query($query)['name'] ?? "";
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
@@ -22,11 +22,11 @@ namespace x\tag {
             ]);
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
             if ($pages->count() > 0) {
-                $pages->lot($pages->is(static function ($v) use ($id) {
+                $pages = $pages->is(static function ($v) use ($id) {
                     $page = new \Page($v);
                     $k = ',' . \implode(',', (array) $page->kind) . ',';
                     return false !== \strpos($k, ',' . $id . ',');
-                })->get());
+                });
             }
             \State::set([
                 'is' => [
@@ -70,7 +70,7 @@ namespace x\tag {
             }
             \State::set('has', [
                 'next' => !!$pager->next,
-                'parent' => !!$pager->parent,
+                'parent' => !!$tag->parent,
                 'part' => $part + 1,
                 'prev' => !!$pager->prev
             ]);
@@ -140,8 +140,8 @@ namespace x\tag {
             // Return the route value to the native page route and move the tag route parameter to `name`
             if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
                 [$any, $path, $name, $part] = $m;
-                $r['name'] = $name;
-                return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash, $r]);
+                $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
+                return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash]);
             }
             return $content;
         }, 90);
