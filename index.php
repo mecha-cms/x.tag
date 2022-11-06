@@ -44,7 +44,7 @@ namespace x\tag {
             ]);
             $GLOBALS['t'][] = \i('Tag');
             $GLOBALS['t'][] = $tag->title;
-            $pager = new \Pager($pages);
+            $pager = \Pager::from($pages);
             $pager->path = $path . '/' . $route . '/' . $name;
             $pager = $pager->chunk($chunk, $part + 1);
             $pages = $pages->chunk($chunk, $part);
