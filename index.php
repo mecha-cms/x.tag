@@ -22,7 +22,7 @@ namespace x\tag {
             ]);
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
             if ($pages->count() > 0) {
-                $pages = $pages->is(static function ($v) use ($id) {
+                $pages = $pages->is(function ($v) use ($id) {
                     $page = new \Page($v);
                     $k = ',' . \implode(',', (array) $page->kind) . ',';
                     return false !== \strpos($k, ',' . $id . ',');

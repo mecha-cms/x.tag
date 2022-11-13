@@ -1,6 +1,6 @@
 <?php
 
-From::_('tag', function ($name) {
+From::_('tag', static function ($name) {
     if (is_string($name)) {
         $folder = LOT . D . 'tag' . D . $name;
         // Get from external `id` data
@@ -18,7 +18,7 @@ From::_('tag', function ($name) {
     return null;
 });
 
-To::_('tag', function ($id) {
+To::_('tag', static function ($id) {
     if (is_int($id)) {
         // Search for external `id` data
         foreach (glob(LOT . D . 'tag' . D . '*' . D . 'id.data', GLOB_NOSORT) as $v) {
