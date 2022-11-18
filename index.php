@@ -18,6 +18,7 @@ namespace x\tag {
             \State::set([
                 'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
                 'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
+                'part' => $part + 1,
                 'sort' => $sort = $tag['sort'] ?? $page['sort'] ?? [1, 'path']
             ]);
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
@@ -71,7 +72,7 @@ namespace x\tag {
             \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$tag->parent,
-                'part' => $part + 1,
+                'part' => !!($part + 1),
                 'prev' => !!$pager->prev
             ]);
             return ['pages', [], 200];
