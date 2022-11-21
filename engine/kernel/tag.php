@@ -3,7 +3,7 @@
 class Tag extends Page {
 
     public function link(...$lot) {
-        if ($v = parent::link()) {
+        if ($v = parent::link(...$lot)) {
             return $v;
         }
         extract($GLOBALS, EXTR_SKIP);
@@ -19,17 +19,6 @@ class Tag extends Page {
             return null;
         }
         $path = $this['page'] ?? null;
-        if (!is_string($path) || !is_file($path)) {
-            return null;
-        }
-        return new Page($path, $lot);
-    }
-
-    public function parent(array $lot = []) {
-        if (!$this->_exist()) {
-            return null;
-        }
-        $path = $this['parent'] ?? null;
         if (!is_string($path) || !is_file($path)) {
             return null;
         }

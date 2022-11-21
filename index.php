@@ -104,19 +104,20 @@ namespace x\tag {
     }
     function tags() {
         $folder = \dirname($path = $this->path);
+        $parent = \exist([
+            $folder . '.archive',
+            $folder . '.page'
+        ], 1) ?: null;
         $tags = [];
         foreach ($this->query() as $v) {
             $v = \strtr($v, ' ', '-');
             $tags[$v] = [
                 'page' => $path,
-                'parent' => \exist([
-                    $folder . '.archive',
-                    $folder . '.page'
-                ], 1) ?: null,
+                'parent' => $parent,
                 'path' => \LOT . \D . 'tag' . \D . $v . '.page'
             ];
         }
-        return (new \Tags($tags))->sort([1, 'title']);
+        return (new \Tags($tags))->sort([1, 'title'], true);
     }
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
