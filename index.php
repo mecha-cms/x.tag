@@ -15,18 +15,20 @@ namespace x\tag {
         $part = ((int) ($part ?? 1)) - 1;
         if (null !== ($id = \From::tag($name))) {
             $page = $tag->parent ?? new \Page;
-            \State::set([
-                'chunk' => $chunk = $tag['chunk'] ?? $page['chunk'] ?? 5,
-                'deep' => $deep = $tag['deep'] ?? $page['deep'] ?? 0,
-                'part' => $part + 1,
-                'sort' => $sort = $tag['sort'] ?? $page['sort'] ?? [1, 'path']
-            ]);
+            $chunk = $tag->chunk ?? $page->chunk ?? 5;
+            $deep = $tag->deep ?? $page->deep ?? 0;
+            $sort = $tag->sort ?? $page->sort ?? [1, 'path'];
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
-            if ($pages->count() > 0) {
+            \State::set([
+                'chunk' => $chunk,
+                'count' => $count = $pages->count,
+                'deep' => $deep,
+                'part' => $part + 1,
+                'sort' => $sort
+            ]);
+            if ($count > 0) {
                 $pages = $pages->is(function ($v) use ($id) {
-                    $page = new \Page($v);
-                    $k = ',' . \implode(',', (array) $page->kind) . ',';
-                    return false !== \strpos($k, ',' . $id . ',');
+                    return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
                 });
             }
             \State::set([
@@ -39,7 +41,7 @@ namespace x\tag {
                 ],
                 'has' => [
                     'page' => true,
-                    'pages' => $pages->count() > 0,
+                    'pages' => $count > 0,
                     'parent' => true
                 ]
             ]);
@@ -47,13 +49,11 @@ namespace x\tag {
             $GLOBALS['t'][] = $tag->title;
             $pager = \Pager::from($pages);
             $pager->path = $path . '/' . $route . '/' . $name;
-            $pager = $pager->chunk($chunk, $part);
-            $pages = $pages->chunk($chunk, $part);
             $GLOBALS['page'] = $page;
-            $GLOBALS['pager'] = $pager;
-            $GLOBALS['pages'] = $pages;
+            $GLOBALS['pager'] = $pager = $pager->chunk($chunk, $part);
+            $GLOBALS['pages'] = $pages = $pages->chunk($chunk, $part);
             if (0 === $pages->count()) {
-                // Greater than the maximum step or less than `1`, abort!
+                // Greater than the maximum part or less than `1`, abort!
                 \State::set([
                     'has' => [
                         'next' => false,
