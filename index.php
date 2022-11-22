@@ -21,7 +21,7 @@ namespace x\tag {
             $pages = \Pages::from(\LOT . \D . 'page' . \D . $path, 'page', $deep)->sort($sort);
             \State::set([
                 'chunk' => $chunk,
-                'count' => $count = $pages->count,
+                'count' => $count = $pages->count, // Total number of page(s)
                 'deep' => $deep,
                 'part' => $part + 1,
                 'sort' => $sort
@@ -52,7 +52,8 @@ namespace x\tag {
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager = $pager->chunk($chunk, $part);
             $GLOBALS['pages'] = $pages = $pages->chunk($chunk, $part);
-            if (0 === $pages->count()) {
+            $count = $pages->count; // Total number of page(s) after chunk
+            if (0 === $count) {
                 // Greater than the maximum part or less than `1`, abort!
                 \State::set([
                     'has' => [
