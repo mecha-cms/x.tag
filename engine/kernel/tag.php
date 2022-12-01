@@ -7,9 +7,12 @@ class Tag extends Page {
             return $v;
         }
         extract($GLOBALS, EXTR_SKIP);
-        $name = $this->_exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null;
-        if ($name && $parent = $this->parent) {
-            return $parent->url . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . '/1';
+        if ($name = $this->_exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null) {
+            $route = trim($state->x->tag->route ?? 'tag', '/');
+            if ($parent = $this->parent) {
+                return $parent->url . '/' . $route . '/' . $name . '/1';
+            }
+            return $url . '/' . $route . '/' . $name . '/1';
         }
         return null;
     }
