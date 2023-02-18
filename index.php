@@ -1,5 +1,14 @@
 <?php
 
+namespace {
+    function tag(...$lot) {
+        return \Tag::from(...$lot);
+    }
+    function tags(...$lot) {
+        return \Tags::from(...$lot);
+    }
+}
+
 namespace x\tag {
     function route($content, $path, $query, $hash) {
         if (null !== $content) {
