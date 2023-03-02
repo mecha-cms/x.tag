@@ -11,15 +11,20 @@ use:
   '.\lot\x\page': 1
 ...
 
-This extension activates the tag feature by utilizing the `kind` property of the page. This extension will also add several new routes such as `http://127.0.0.1/blog/tag/:tag/1` on every page to allow users to list all pages in the current folder by a tag.
+This extension activates the tag feature by utilizing the `kind` property of the page. This extension will also add
+several new routes such as `http://127.0.0.1/blog/tag/:tag/1` on every page to allow users to list all pages in the
+current folder by a tag.
 
 ### Working with Tags
 
-[Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But, if you have to, you can still make this extension work even without the GUI feature. Before we start, you need to know how this extension works.
+[Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But, if you have to, you
+can still make this extension work even without the GUI feature. Before we start, you need to know how this extension
+works.
 
 #### Page Properties
 
-Get to know that this extension adds `query` and `tags` properties to the page only if the page contains `kind` property that is not empty:
+Get to know that this extension adds `query` and `tags` properties to the page only if the page contains `kind` property
+that is not empty:
 
 ~~~ .php
 test(
@@ -34,7 +39,8 @@ test(
 
 #### File Structure
 
-Writing a tag file is the same as writing a page file. The only difference is that you must write the `id` property separately from the page:
+Writing a tag file is the same as writing a page file. The only difference is that you must write the `id` property
+separately from the page:
 
 ~~~ .txt
 .\
@@ -53,7 +59,8 @@ Writing a tag file is the same as writing a page file. The only difference is th
 
 #### File Content
 
-Make sure to specify a unique number for each `id.data` file. These numbers, then will be used to connect the tag file with the `kind` property on every page.
+Make sure to specify a unique number for each `id.data` file. These numbers, then will be used to connect the tag file
+with the `kind` property on every page.
 
 Here’s an example of a tag file content:
 
@@ -69,7 +76,8 @@ Long description about this tag.
 
 #### Connections
 
-To connect between tags with the current page, create a `kind.data` file in the corresponding folder, containing a list of tag’s ID written in a valid JSON format:
+To connect between tags with the current page, create a `kind.data` file in the corresponding folder, containing a list
+of tag’s ID written in a valid JSON format:
 
 ~~~ .txt
 .\
@@ -86,7 +94,8 @@ Example content of `kind.data` file:
 [1, 2, 3]
 ~~~
 
-You can actually insert the `kind` property in the page header, but this method is a little inefficient in terms of performance:
+You can actually insert the `kind` property in the page header, but this method is a little inefficient in terms of
+performance:
 
 ~~~ .yaml
 ---
@@ -102,24 +111,57 @@ Page content goes here.
 
 ---
 
-### Variables
+These HTML classes will be added to the root element if it has a `class` attribute when you are in the archives page.
+You can use this feature to create a specific look or response on your site from the client-side when the following
+classes are found in the root element:
 
-A global variable `$tag` will be available in tags page mode. This variable is an instance of the `Tag` class which you can use to get the current tag details.
+`is:tags`
+: Will be added if current items view is a tags view and is not empty.
 
-~~~ .php
-if ($site->is('tags')) {
-    echo i('Current tag is %s.', [$tag->title]);
+Example usage in CSS code:
+
+~~~ .css
+.is\:tags body {
+  border-top: 4px solid #f00;
 }
 ~~~
 
-### Conditions
+Example usage in JS code:
 
-These page conditional statements are available:
+~~~ .js
+if (document.documentElement.classList.contains('is:tags')) {
+    console.info('You are currently in the tags page.');
+}
+~~~
 
- - `$site->is('tags')` → Return `true` if current items view is a tags view and is not empty.
+These additional conditional statements are available for use in layouts to show/hide elements on your site from the
+server-side:
 
-### Classes
+`$site->is('tags')`
+: Returns `true` if current items view is a tags view and is not empty.
 
-These HTML classes will be added to the `<html>` element that has a `class` attribute:
+Example usage in HTML/PHP code:
 
- - `is:tags` → Will be added if current items view is a tags view and is not empty.
+~~~ .html.php
+<?php if ($site->is('tags')): ?>
+  <p role="alert">
+    <?= i('You are currently in the tags page.'); ?>
+  </p>
+<?php endif; ?>
+~~~
+
+These additional variables are available for use in layouts which will carry the data related to the currently active
+tag page:
+
+`$tag`
+: This variable is an instance of the `Tag` class which you can use to get the current tag information.
+
+Example usage in HTML/PHP code:
+
+~~~ .html.php
+<?php if ($site->is('tags') && !empty($tag)): ?>
+  <p role="alert">
+    <?= i('Showing pages filtered by tag %s.', $tag->title); ?>
+  </p>
+<?php endif; ?>
+~~~
