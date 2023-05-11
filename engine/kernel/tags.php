@@ -7,9 +7,6 @@ class Tags extends Pages {
     }
 
     public static function from(...$lot) {
-        if (is_array($v = reset($lot))) {
-            return new static($v);
-        }
         $lot[0] = $lot[0] ?? LOT . D . 'tag';
         return parent::from(...$lot);
     }
