@@ -10,7 +10,24 @@ namespace {
 }
 
 namespace x\tag {
-    function route($content, $path, $query, $hash) {
+    function route__page($content, $path, $query, $hash) {
+        \extract($GLOBALS, \EXTR_SKIP);
+        $route = \trim($state->x->tag->route ?? 'tag', '/');
+        // Return the route value to the native page route and move the tag route parameter to `name`
+        if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
+            [$any, $path, $name, $part] = $m;
+            $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
+            return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash]);
+        }
+        // List page(s) recursively if `/tag/:name` pattern appears at the root
+        if ($path && \preg_match('/^\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
+            [$any, $name, $part] = $m;
+            $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
+            return \Hook::fire('route.tag', [$content, '/' . $part, $query, $hash]);
+        }
+        return $content;
+    }
+    function route__tag($content, $path, $query, $hash) {
         if (null !== $content) {
             return $content;
         }
@@ -152,21 +169,7 @@ namespace x\tag {
                 $folder . '.page'
             ], 1) ?: null) : null
         ]);
-        \Hook::set('route.page', function ($content, $path, $query, $hash) use ($route) {
-            // Return the route value to the native page route and move the tag route parameter to `name`
-            if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
-                [$any, $path, $name, $part] = $m;
-                $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
-                return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash]);
-            }
-            // List page(s) recursively if `/tag/:name` pattern appears at the root
-            if ($path && \preg_match('/^\/' . x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
-                [$any, $name, $part] = $m;
-                $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
-                return \Hook::fire('route.tag', [$content, '/' . $part, $query, $hash]);
-            }
-            return $content;
-        }, 90);
-        \Hook::set('route.tag', __NAMESPACE__ . "\\route", 100);
+        \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
+        \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
     }
 }
