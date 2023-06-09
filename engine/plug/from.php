@@ -5,13 +5,15 @@ From::_('tag', static function ($name) {
         $folder = LOT . D . 'tag' . D . $name;
         // Get from external `id` data
         if (is_file($file = $folder . D . 'id.data') && filesize($file) > 0) {
-            return (int) trim((string) fgets(fopen($file, 'r')));
+            $id = trim((string) fgets($h = fopen($file, 'r')));
+            fclose($h);
+            return is_numeric($id) ? (int) $id : $id;
         } else if ($file = exist([
             $folder . '.archive',
             $folder . '.page'
         ], 1)) {
-            // Get from embedded `id` data
-            return From::page(file_get_contents($file))['id'] ?? null;
+            // Get from internal `id` data
+            return From::page(file_get_contents($file), true)['id'] ?? null;
         }
     }
     // Else…

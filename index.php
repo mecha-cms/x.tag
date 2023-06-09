@@ -7,6 +7,8 @@ namespace {
     function tags(...$lot) {
         return \Tags::from(...$lot);
     }
+    // Initialize response variable(s)
+    $GLOBALS['tag'] = new \Tag;
 }
 
 namespace x\tag {
@@ -19,7 +21,7 @@ namespace x\tag {
             $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
             return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash]);
         }
-        // List page(s) recursively if `/tag/:name` pattern appears at the root
+        // List page(s) recursively if `/tag/:name` route is in the root URL
         if ($path && \preg_match('/^\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
             [$any, $name, $part] = $m;
             $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
@@ -40,10 +42,10 @@ namespace x\tag {
         }
         $part = ((int) ($part ?? 1)) - 1;
         if (null !== ($id = \From::tag($name))) {
-            $route_default = \trim($state->route ?? 'index', '/');
+            $folder = \LOT . \D . 'page' . \D . \trim($state->route ?? 'index', '/');
             $page = $tag->parent ?? new \Page(\exist([
-                \LOT . \D . 'page' . \D . $route_default . '.archive',
-                \LOT . \D . 'page' . \D . $route_default . '.page'
+                $folder . '.archive',
+                $folder . '.page'
             ]) ?: null);
             $chunk = $tag->chunk ?? $page->chunk ?? 5;
             $deep = "" !== $path ? ($tag->deep ?? $page->deep ?? 0) : true;
@@ -124,8 +126,11 @@ namespace x\tag {
         return ['page', [], 404];
     }
     function query() {
+        if (!$kind = $this->kind) {
+            return [];
+        }
         $query = [];
-        foreach ((array) $this->kind as $v) {
+        foreach ((array) $kind as $v) {
             if ($name = \To::tag($v)) {
                 $query[] = \strtr($name, '-', ' ');
             }
@@ -134,13 +139,16 @@ namespace x\tag {
         return $query;
     }
     function tags() {
+        if (!$query = $this->query()) {
+            return new \Tags;
+        }
         $folder = \dirname($path = $this->path);
         $parent = \exist([
             $folder . '.archive',
             $folder . '.page'
         ], 1) ?: null;
         $tags = [];
-        foreach ($this->query() as $v) {
+        foreach ((array) $query as $v) {
             $v = \strtr($v, ' ', '-');
             $tags[$v] = [
                 'page' => $path,
@@ -152,17 +160,17 @@ namespace x\tag {
     }
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
-    $chops = \explode('/', $url->path ?? "");
-    $part = \array_pop($chops);
-    $tag = \array_pop($chops);
+    $any = \explode('/', $url->path ?? "");
+    $part = \array_pop($any);
+    $tag = \array_pop($any);
     $route = \trim($state->x->tag->route ?? 'tag', '/');
-    $prefix = \array_pop($chops);
-    $GLOBALS['tag'] = new \Tag;
+    $prefix = \array_pop($any);
+    $folder = \LOT . \D . 'tag' . \D . $tag;
     if ($tag && $route === $prefix && ($file = \exist([
-        \LOT . \D . 'tag' . \D . $tag . '.archive',
-        \LOT . \D . 'tag' . \D . $tag . '.page'
+        $folder . '.archive',
+        $folder . '.page'
     ], 1))) {
-        $folder = \LOT . \D . 'page' . ($path = \implode(\D, $chops));
+        $folder = \LOT . \D . 'page' . ($path = \implode(\D, $any));
         $GLOBALS['tag'] = new \Tag($file, [
             'parent' => "" !== $path ? (\exist([
                 $folder . '.archive',
