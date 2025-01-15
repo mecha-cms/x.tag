@@ -6,7 +6,7 @@ class Tag extends Page {
         if ($v = parent::link(...$lot)) {
             return $v;
         }
-        extract($GLOBALS, EXTR_SKIP);
+        extract(lot(), EXTR_SKIP);
         if ($name = $this->_exist() ? pathinfo($this->path, PATHINFO_FILENAME) : null) {
             $route = trim($state->x->tag->route ?? 'tag', '/');
             if ($parent = $this->parent) {

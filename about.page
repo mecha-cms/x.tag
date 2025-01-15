@@ -5,7 +5,7 @@ icon: 'M5.5,9A1.5,1.5 0 0,0 7,7.5A1.5,1.5 0 0,0 5.5,6A1.5,1.5 0 0,0 4,7.5A1.5,1.
 color: '#195fe7'
 author: Taufik Nurrohman
 type: Markdown
-version: 3.0.0
+version: 3.0.1
 ...
 
 This extension enables the tag filter feature by using the page’s `kind` property to add multiple routes, such as

@@ -8,12 +8,12 @@ namespace {
         return \Tags::from(...$lot);
     }
     // Initialize response variable(s)
-    $GLOBALS['tag'] = new \Tag;
+    \lot('tag', new \Tag);
 }
 
 namespace x\tag {
     function route__page($content, $path, $query, $hash) {
-        \extract($GLOBALS, \EXTR_SKIP);
+        \extract(\lot(), \EXTR_SKIP);
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         // Return the route value to the native page route and move the tag route parameter to `name`
         if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
@@ -33,7 +33,7 @@ namespace x\tag {
         if (null !== $content) {
             return $content;
         }
-        \extract($GLOBALS, \EXTR_SKIP);
+        \extract(\lot(), \EXTR_SKIP);
         $name = \From::query($query)['name'] ?? "";
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
@@ -77,13 +77,13 @@ namespace x\tag {
                     'parent' => true
                 ]
             ]);
-            $GLOBALS['t'][] = \i('Tag');
-            $GLOBALS['t'][] = $tag->title;
+            \lot('t')[] = \i('Tag');
+            \lot('t')[] = $tag->title;
             $pager = \Pager::from($pages);
             $pager->path = $path . '/' . $route . '/' . $name;
-            $GLOBALS['page'] = $page;
-            $GLOBALS['pager'] = $pager = $pager->chunk($chunk, $part);
-            $GLOBALS['pages'] = $pages = $pages->chunk($chunk, $part);
+            \lot('page', $page);
+            \lot('pager', $pager = $pager->chunk($chunk, $part));
+            \lot('pages', $pages = $pages->chunk($chunk, $part));
             $count = $pages->count; // Total number of page(s) after chunk
             if (0 === $count) {
                 // Greater than the maximum part or less than `1`, abort!
@@ -99,7 +99,7 @@ namespace x\tag {
                         'pages' => false
                     ]
                 ]);
-                $GLOBALS['t'][] = \i('Error');
+                \lot('t')[] = \i('Error');
                 return ['page', [], 404];
             }
             \State::set('has', [
@@ -122,7 +122,7 @@ namespace x\tag {
                 'pages' => false
             ]
         ]);
-        $GLOBALS['t'][] = \i('Error');
+        \lot('t')[] = \i('Error');
         return ['page', [], 404];
     }
     function query() {
@@ -171,12 +171,12 @@ namespace x\tag {
         $folder . '.page'
     ], 1))) {
         $folder = \LOT . \D . 'page' . ($path = \implode(\D, $any));
-        $GLOBALS['tag'] = new \Tag($file, [
+        \lot('tag', new \Tag($file, [
             'parent' => "" !== $path ? (\exist([
                 $folder . '.archive',
                 $folder . '.page'
             ], 1) ?: null) : null
-        ]);
+        ]));
         \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
         \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
     }
