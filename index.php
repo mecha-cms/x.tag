@@ -37,7 +37,7 @@ namespace x\tag {
         $name = \From::query($query)['name'] ?? "";
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
-        if ($path && \preg_match('/^(?:(.*?)\/)?([1-9]\d*)$/', $path, $m)) {
+        if ($path && \preg_match('/^(?>(.*?)\/)?([1-9]\d*)$/', $path, $m)) {
             [$any, $path, $part] = $m;
         }
         $part = ((int) ($part ?? 1)) - 1;
@@ -100,7 +100,7 @@ namespace x\tag {
                     ]
                 ]);
                 \lot('t')[] = \i('Error');
-                return ['page', [], 404];
+                return ['page/tag', [], 404];
             }
             \State::set('has', [
                 'next' => !!$pager->next,
@@ -108,7 +108,7 @@ namespace x\tag {
                 'part' => !!($part + 1),
                 'prev' => !!$pager->prev
             ]);
-            return ['pages', [], 200];
+            return ['pages/tag/' . $tag->name, [], 200];
         }
         \State::set([
             'has' => [
@@ -123,7 +123,7 @@ namespace x\tag {
             ]
         ]);
         \lot('t')[] = \i('Error');
-        return ['page', [], 404];
+        return ['page/tag', [], 404];
     }
     function query() {
         if (!$kind = $this->kind) {
