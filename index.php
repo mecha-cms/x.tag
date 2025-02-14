@@ -37,8 +37,8 @@ namespace x\tag {
         $name = \From::query($query)['name'] ?? "";
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
-        if ($path && \preg_match('/^(?>(.*?)\/)?([1-9]\d*)$/', $path, $m)) {
-            [$any, $path, $part] = $m;
+        if ($part = \x\page\n($path)) {
+            $path = \substr($path, 0, -\strlen('/' . $part));
         }
         $part = ((int) ($part ?? 1)) - 1;
         if (null !== ($id = \From::tag($name))) {
@@ -84,8 +84,7 @@ namespace x\tag {
             \lot('page', $page);
             \lot('pager', $pager = $pager->chunk($chunk, $part));
             \lot('pages', $pages = $pages->chunk($chunk, $part));
-            $count = $pages->count; // Total number of page(s) after chunk
-            if (0 === $count) {
+            if (0 === ($count = $pages->count)) { // Total number of page(s) after chunk
                 // Greater than the maximum part or less than `1`, abort!
                 \State::set([
                     'has' => [
@@ -95,12 +94,12 @@ namespace x\tag {
                     ],
                     'is' => [
                         'error' => 404,
-                        'page' => true,
-                        'pages' => false
+                        'page' => false,
+                        'pages' => true
                     ]
                 ]);
                 \lot('t')[] = \i('Error');
-                return ['page/tag', [], 404];
+                return ['pages/tag/' . $name, [], 404];
             }
             \State::set('has', [
                 'next' => !!$pager->next,
@@ -108,7 +107,7 @@ namespace x\tag {
                 'part' => !!($part + 1),
                 'prev' => !!$pager->prev
             ]);
-            return ['pages/tag/' . $tag->name, [], 200];
+            return ['pages/tag/' . $name, [], 200];
         }
         \State::set([
             'has' => [
@@ -123,7 +122,7 @@ namespace x\tag {
             ]
         ]);
         \lot('t')[] = \i('Error');
-        return ['page/tag', [], 404];
+        return ['page/tag/' . $name, [], 404];
     }
     function query() {
         if (!$kind = $this->kind) {
