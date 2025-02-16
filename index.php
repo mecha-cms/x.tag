@@ -14,18 +14,26 @@ namespace {
 namespace x\tag {
     function route__page($content, $path, $query, $hash) {
         \extract(\lot(), \EXTR_SKIP);
-        $route = \trim($state->x->tag->route ?? 'tag', '/');
-        // Return the route value to the native page route and move the tag route parameter to `name`
-        if ($path && \preg_match('/^(.*?)\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
-            [$any, $path, $name, $part] = $m;
-            $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
-            return \Hook::fire('route.tag', [$content, $path . '/' . $part, $query, $hash]);
+        if (!$part = \x\page\n($path = \trim($path ?? "", '/'))) {
+            return $content;
         }
-        // List page(s) recursively if `/tag/:name` route is in the root URL
-        if ($path && \preg_match('/^\/' . \x($route) . '\/([^\/]+)\/([1-9]\d*)$/', $path, $m)) {
-            [$any, $name, $part] = $m;
-            $query = \To::query(\array_replace(\From::query($query), ['name' => $name]));
-            return \Hook::fire('route.tag', [$content, '/' . $part, $query, $hash]);
+        $path = \substr($path, 0, -\strlen('/' . $part));
+        $route = \trim($state->x->tag->route ?? 'tag', '/');
+        // Return the route value to the native page route and move the tag route parameter to state
+        if ($path) {
+            // List page(s) recursively if `/tag/:name` route is in the root URL
+            if (0 === \strpos($path . '/', $route . '/')) {
+                \State::set('[x].query.tag', \substr($path, \strlen($route) + 1));
+                return \Hook::fire('route.tag', [$content, '/' . $part, $query, $hash]);
+            }
+            $a = \explode('/', $path);
+            $name = \array_pop($a);
+            $r = \array_pop($a);
+            if ($r !== $route) {
+                return $content;
+            }
+            \State::set('[x].query.tag', $name);
+            return \Hook::fire('route.tag', [$content, \implode('/', $a) . '/' . $part, $query, $hash]);
         }
         return $content;
     }
@@ -34,26 +42,22 @@ namespace x\tag {
             return $content;
         }
         \extract(\lot(), \EXTR_SKIP);
-        $name = \From::query($query)['name'] ?? "";
+        $name = \State::get('[x].query.tag') ?? "";
         $path = \trim($path ?? "", '/');
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($part = \x\page\n($path)) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
-        $part = ((int) ($part ?? 1)) - 1;
+        $part = ((int) ($part ?? 0)) - 1;
         if (null !== ($id = \From::tag($name))) {
-            $folder = \LOT . \D . 'page' . \D . \trim($state->route ?? 'index', '/');
-            $page = $tag->parent ?? new \Page(\exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ]) ?: null);
+            $page = $tag->parent ?? $tag;
             $chunk = $tag->chunk ?? $page->chunk ?? 5;
             $deep = "" !== $path ? ($tag->deep ?? $page->deep ?? 0) : true;
             $sort = $tag->sort ?? $page->sort ?? [1, 'path'];
             $pages = \Pages::from(\LOT . \D . 'page' . ("" !== $path ? \D . $path : ""), 'page', $deep)->sort($sort);
             \State::set([
                 'chunk' => $chunk,
-                'count' => $count = $pages->count, // Total number of page(s)
+                'count' => $count = $pages->count, // Total number of page(s) before chunk
                 'deep' => $deep,
                 'part' => $part + 1,
                 'sort' => $sort
@@ -104,7 +108,7 @@ namespace x\tag {
             \State::set('has', [
                 'next' => !!$pager->next,
                 'parent' => !!$tag->parent,
-                'part' => !!($part + 1),
+                'part' => $part >= 0,
                 'prev' => !!$pager->prev
             ]);
             return ['pages/tag/' . $name, [], 200];
