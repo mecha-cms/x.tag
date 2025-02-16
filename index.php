@@ -13,6 +13,9 @@ namespace {
 
 namespace x\tag {
     function route__page($content, $path, $query, $hash) {
+        if (null !== $content) {
+            return $content;
+        }
         \extract(\lot(), \EXTR_SKIP);
         if (!$part = \x\page\n($path = \trim($path ?? "", '/'))) {
             return $content;
@@ -163,17 +166,17 @@ namespace x\tag {
     }
     \Page::_('query', __NAMESPACE__ . "\\query");
     \Page::_('tags', __NAMESPACE__ . "\\tags");
-    $any = \explode('/', $url->path ?? "");
-    $part = \array_pop($any);
-    $tag = \array_pop($any);
+    $chops = \explode('/', $url->path ?? "");
+    $part = \array_pop($chops);
+    $tag = \array_pop($chops);
     $route = \trim($state->x->tag->route ?? 'tag', '/');
-    $prefix = \array_pop($any);
+    $prefix = \array_pop($chops);
     $folder = \LOT . \D . 'tag' . \D . $tag;
     if ($tag && $route === $prefix && ($file = \exist([
         $folder . '.archive',
         $folder . '.page'
     ], 1))) {
-        $folder = \LOT . \D . 'page' . ($path = \implode(\D, $any));
+        $folder = \LOT . \D . 'page' . ($path = \implode(\D, $chops));
         \lot('tag', new \Tag($file, [
             'parent' => "" !== $path ? (\exist([
                 $folder . '.archive',
