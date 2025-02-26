@@ -3,7 +3,7 @@
 class Tags extends Pages {
 
     public function page(...$lot) {
-        return Tag::from(...$lot);
+        return new Tag(...$lot);
     }
 
     public static function from(...$lot) {

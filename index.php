@@ -7,7 +7,7 @@ namespace {
     function tags(...$lot) {
         return \Tags::from(...$lot);
     }
-    // Initialize response variable(s)
+    // Initialize layout variable(s)
     \lot('tag', new \Tag);
 }
 

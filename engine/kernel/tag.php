@@ -21,11 +21,12 @@ class Tag extends Page {
         if (!$this->_exist()) {
             return null;
         }
-        $path = $this['page'] ?? null;
-        if (!is_string($path) || !is_file($path)) {
-            return null;
+        if ($v = $this->offsetGet('page')) {
+            if (is_string($v) && is_file($v)) {
+                return new Page($v, $lot);
+            }
         }
-        return new Page($path, $lot);
+        return null;
     }
 
 }
