@@ -29,4 +29,14 @@ class Tag extends Page {
         return null;
     }
 
+    public function route(...$lot) {
+        if ($path = $this->_exist()) {
+            if (0 === strpos($path, $r = LOT . D . 'tag' . D)) {
+                $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
+                return '/' . trim(strtr($folder, [$r => '/', D => '/']), '/');
+            }
+        }
+        return parent::route(...$lot);
+    }
+
 }

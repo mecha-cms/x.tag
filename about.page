@@ -9,7 +9,7 @@ version: 3.1.0
 ...
 
 This extension enables the tag filter feature by using the page’s `kind` property to add multiple routes, such as
-`http://127.0.0.1/blog/tag/:tag/1`, to each page to allow users to list all pages in the current folder by tag.
+`http://127.0.0.1/article/tag/:name/1`, to each page to allow users to list all pages in the current folder by tag.
 
 [Panel](https://github.com/mecha-cms/x.panel) extension can help you to automate everything. But if you have to, you can
 still make this extension work without the GUI feature. Before we start, you need to know how this extension works.
@@ -82,14 +82,26 @@ kind: [ 1, 2, 3 ]
 Page content goes here.
 ~~~
 
+### Routes
+
+Route | Description
+----- | -----------
+`/tag/1` | Display a list of the tags.
+`/tag/tag-name` | Display a tag file stored in folder `.\lot\tag` as `tag-name.archive` or `tag-name.page` as a single page.
+`/tag/tag-name/1` | Recursively display a list of pages that have been tagged with the `'tag-name'` tag name.
+`/article/tag/tag-name/1` | Display a list of pages stored in folder `.\lot\page\article` that have been tagged with the `'tag-name'` tag name.
+
 ### Usage
 
 These HTML classes will be added to the root element if it contains a `class` attribute when you are on the tags page.
 You can use this feature to create a specific look or response on your site from the client side if the following
 classes are found in the root element:
 
+`is:tag`
+: Will be added if the current item view is a tag view.
+
 `is:tags`
-: Will be added if the current items view is a tags view and is not empty.
+: Will be added if the current items view is a tags view.
 
 Example usage in CSS code:
 
@@ -110,8 +122,11 @@ if (document.documentElement.classList.contains('is:tags')) {
 These additional conditional statements are available for use in layouts to show/hide elements on your site from the
 server side:
 
+`$site->is('tag')`
+: Returns `true` if the current item view is a tag view.
+
 `$site->is('tags')`
-: Returns `true` if the current items view is a tags view and is not empty.
+: Returns `true` if the current items view is a tags view.
 
 Example usage in HTML/PHP code:
 
@@ -142,10 +157,10 @@ This extension will also add `query` and `tags` properties to the page only if t
 is not empty:
 
 ~~~ .php
-// These numbers refer to the tag IDs.
+// These numbers refer to the IDs of the tags.
 $kind = $page->kind; // Returns `[1, 2, 3]`
 // These queries are automatically generated based on the available tags.
-// They may be generated less than the amount of `kind` data because non-existent tag IDs are ignored.
+// It may generate less than the amount of the `$page->kind` data because stale tag IDs are ignored.
 $query = $page->query; // Returns `['bar', 'baz', 'foo']`
 // These tags data are also generated based on the available tags.
 $tags = $page->tags; // Returns `Tags` class instance
