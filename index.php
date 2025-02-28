@@ -50,10 +50,17 @@ namespace x\tag {
         $tags = [];
         foreach ((array) $query as $q) {
             $q = \strtr($q, ' ', '-');
+            $folder = \LOT . \D . 'tag' . \D . $q;
+            if (!$file = \exist([
+                $folder . '.archive',
+                $folder . '.page'
+            ], 1)) {
+                continue;
+            }
             $tags[$q] = [
                 'page' => $path,
                 'parent' => $parent,
-                'path' => \LOT . \D . 'tag' . \D . $q . '.page'
+                'path' => $file
             ];
         }
         return (new \Tags($tags))->sort([1, 'title'], true);
