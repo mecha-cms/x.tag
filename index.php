@@ -247,7 +247,8 @@ namespace x\tag {
         \lot('page', $page = new \Page([
             'description' => \i('List of the %s.', 'tags'),
             'exist' => true,
-            'title' => \i('Tags')
+            'title' => \i('Tags'),
+            'type' => 'HTML'
         ]));
         \lot('pager', $pager = $pager->chunk($chunk, $part));
         \lot('pages', $pages = $pages->chunk($chunk, $part));
