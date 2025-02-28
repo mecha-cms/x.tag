@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'chunk' => 2,
+    'chunk' => 5,
     'deep' => 0,
     'route' => '/tag',
     'sort' => [1, 'title']
