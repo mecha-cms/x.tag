@@ -384,7 +384,7 @@ namespace x\tag {
                     $folder . '.archive',
                     $folder . '.page'
                 ], 1)) {
-                    $folder = \LOT . \D . 'page' . \implode(\D, $a);
+                    $folder = \LOT . \D . 'page' . \D . \implode(\D, $a);
                     \lot('tag', new \Tag($file, [
                         'parent' => \exist([
                             $folder . '.archive',
