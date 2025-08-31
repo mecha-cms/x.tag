@@ -97,16 +97,16 @@ These HTML classes will be added to the root element if it contains a `class` at
 You can use this feature to create a specific look or response on your site from the client side if the following
 classes are found in the root element:
 
-`is:tag`
+`is-tag`
 : Will be added if the current item view is a tag view.
 
-`is:tags`
+`is-tags`
 : Will be added if the current items view is a tags view.
 
 Example usage in CSS code:
 
 ~~~ .css
-.is\:tags body {
+.is-tags body {
   border-top: 4px solid #f00;
 }
 ~~~
@@ -114,7 +114,7 @@ Example usage in CSS code:
 Example usage in JS code:
 
 ~~~ .js
-if (document.documentElement.classList.contains('is:tags')) {
+if (document.documentElement.classList.contains('is-tags')) {
     console.info('You are currently in the tags page.');
 }
 ~~~

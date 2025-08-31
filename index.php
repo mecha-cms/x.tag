@@ -32,7 +32,6 @@ namespace x\tag {
                 $r[] = \strtr($name, '-', ' ');
             }
         }
-        \sort($r);
         return $r;
     }
     function page_tags() {
@@ -63,14 +62,14 @@ namespace x\tag {
                 'path' => $file
             ];
         }
-        return (new \Tags($tags))->sort([1, 'title'], true);
+        return new \Tags($tags);
     }
     function route__page($content, $path, $query, $hash) {
         if (null !== $content) {
             return $content;
         }
         \extract(\lot(), \EXTR_SKIP);
-        if ($part = \x\page\n($path = \trim($path ?? "", '/'))) {
+        if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
         $route = \trim($state->x->tag->route ?? 'tag', '/');
@@ -93,7 +92,7 @@ namespace x\tag {
         }
         \extract(\lot(), \EXTR_SKIP);
         $route = \trim($state->x->tag->route ?? 'tag', '/');
-        if ($part = \x\page\n($path = \trim($path ?? "", '/'))) {
+        if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
         $part = ($part ?? 0) - 1;
@@ -294,7 +293,7 @@ namespace x\tag {
         ]);
         return ['pages/tags', [], 200];
     }
-    if ($part = \x\page\n($path = \trim($url->path ?? "", '/'))) {
+    if ($part = \x\page\part($path = \trim($url->path ?? "", '/'))) {
         $path = \substr($path, 0, -\strlen('/' . $part));
     }
     $route = \trim($state->x->tag->route ?? 'tag', '/');
@@ -319,8 +318,8 @@ namespace x\tag {
             'part' => $part
         ]);
         // For `/tag/:name/…`
-        if ("" !== ($query = \substr($path, \strlen($route) + 1))) {
-            \State::set('[x].query.tag', $query);
+        if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
+            \State::set('[x].query.tag', $v);
             $folder = \LOT . \D . 'tag' . \D . \strtr($query, '/', \D);
             if ($file = \exist([
                 $folder . '.archive',
@@ -335,9 +334,9 @@ namespace x\tag {
         }
     } else {
         $a = \explode('/', $path);
-        $name = \array_pop($a);
+        $v = \array_pop($a);
         // For `/…/tag/:part`
-        if ($a && $part && $name === $route) {
+        if ($a && $part && $v === $route) {
             \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
             \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
             \State::set([
@@ -358,12 +357,12 @@ namespace x\tag {
             ]);
         } else {
             $r = \array_pop($a);
-            $folder = \LOT . \D . 'tag' . \D . $name;
+            $folder = \LOT . \D . 'tag' . \D . $v;
             // For `/…/tag/:name/:part`
             if ($a && $part && $r === $route) {
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
                 \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
-                \State::set('[x].query.tag', $name);
+                \State::set('[x].query.tag', $v);
                 \State::set([
                     'has' => [
                         'page' => false,
