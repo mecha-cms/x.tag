@@ -320,7 +320,7 @@ namespace x\tag {
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
             \State::set('[x].query.tag', $v);
-            $folder = \LOT . \D . 'tag' . \D . \strtr($query, '/', \D);
+            $folder = \LOT . \D . 'tag' . \D . \strtr($v, '/', \D);
             if ($file = \exist([
                 $folder . '.archive',
                 $folder . '.page'
