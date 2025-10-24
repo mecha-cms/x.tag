@@ -310,12 +310,12 @@ namespace x\tag {
             ],
             'is' => [
                 'error' => 404,
-                'page' => !$part,
-                'pages' => !!$part,
-                'tag' => !$part,
-                'tags' => !!$part
+                'page' => $part < 0,
+                'pages' => $part >= 0,
+                'tag' => $part < 0,
+                'tags' => $part >= 0
             ],
-            'part' => $part
+            'part' => $part + 1
         ]);
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
@@ -348,12 +348,12 @@ namespace x\tag {
                 ],
                 'is' => [
                     'error' => 404,
-                    'page' => !$part,
-                    'pages' => !!$part,
-                    'tag' => !$part,
-                    'tags' => !!$part
+                    'page' => $part < 0,
+                    'pages' => $part >= 0,
+                    'tag' => $part < 0,
+                    'tags' => $part >= 0
                 ],
-                'part' => $part
+                'part' => $part + 1
             ]);
         } else {
             $r = \array_pop($a);
@@ -372,12 +372,12 @@ namespace x\tag {
                     ],
                     'is' => [
                         'error' => 404,
-                        'page' => !$part,
-                        'pages' => !!$part,
-                        'tag' => !$part,
-                        'tags' => !!$part
+                        'page' => $part < 0,
+                        'pages' => $part >= 0,
+                        'tag' => $part < 0,
+                        'tags' => $part >= 0
                     ],
-                    'part' => $part
+                    'part' => $part + 1
                 ]);
                 if ($file = \exist([
                     $folder . '.archive',

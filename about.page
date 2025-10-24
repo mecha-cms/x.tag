@@ -86,10 +86,11 @@ Page content goes here.
 
 Route | Description
 ----- | -----------
-`/tag/1` | Display a list of the tags.
-`/tag/tag-name` | Display a tag file stored in folder `.\lot\tag` as `tag-name.archive` or `tag-name.page` as a single page.
-`/tag/tag-name/1` | Recursively display a list of pages that have been tagged with the `'tag-name'` tag name.
-`/article/tag/tag-name/1` | Display a list of pages stored in folder `.\lot\page\article` that have been tagged with the `'tag-name'` tag name.
+`/tag/1` | Display all site tags.
+`/tag/tag-name` | Display the site tag for the `tag-name`.
+`/tag/tag-name/1` | Display all pages that have been tagged with the `tag-name`, recursively.
+`/article/tag/1` | Display all the site tags that have been used under the `/article` route.
+`/article/tag/tag-name/1` | Display all pages that have been tagged with the `tag-name`, recursively under the `/article` route.
 
 ### Usage
 
