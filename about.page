@@ -104,6 +104,9 @@ classes are found in the root element:
 `is-tags`
 : Will be added if the current items view is a tags view.
 
+`with-tags`
+: Will be added if the current items view is a tags view, displaying a list of tags.
+
 Example usage in CSS code:
 
 ~~~ .css
@@ -129,13 +132,22 @@ server side:
 `$site->is('tags')`
 : Returns `true` if the current items view is a tags view.
 
+`$site->with('tags')`
+: Returns `true` if the current items view is a tags view, displaying a list of tags.
+
 Example usage in HTML/PHP code:
 
 ~~~ .html.php
 <?php if ($site->is('tags')): ?>
-  <p role="alert">
-    <?= i('You are currently in the tags page.'); ?>
-  </p>
+  <?php if ($site->with('tags')): ?>
+    <p role="alert">
+      <?= i('You are currently in the tags page.'); ?>
+    </p>
+  <?php else: ?>
+    <p role="alert">
+      <?= i('Showing a list of pages filtered by tag %s.', $tag->title); ?>
+    </p>
+  <?php endif; ?>
 <?php endif; ?>
 ~~~
 
@@ -144,27 +156,14 @@ These additional variables are available for use in layouts that carry data rela
 `$tag`
 : This variable is an instance of the `Tag` class, which you can use to get the current tag information.
 
-Example usage in HTML/PHP code:
-
-~~~ .html.php
-<?php if ($site->is('tags') && !empty($tag)): ?>
-  <p role="alert">
-    <?= i('Showing pages filtered by tag %s.', $tag->title); ?>
-  </p>
-<?php endif; ?>
-~~~
-
-This extension will also add `query` and `tags` properties to the page only if the page contains a `kind` property that
-is not empty:
+This extension will also add a `tags` property to the page only if the page contains a `kind` property that is not
+empty:
 
 ~~~ .php
-// These numbers refer to the IDs of the tags.
+// These numbers refer to the IDs of the tags
 $kind = $page->kind; // Returns `[1, 2, 3]`
-// These queries are automatically generated based on the available tags.
-// It may generate less than the amount of the `$page->kind` data because stale tag IDs are ignored.
-$query = $page->query; // Returns `['bar', 'baz', 'foo']`
-// These tags data are also generated based on the available tags.
-$tags = $page->tags; // Returns `Tags` class instance
+// These tags data are also generated based on the available tags
+$tags = $page->tags; // Returns `Tags` class instance or `null`
 ~~~
 
 Example usage in HTML/PHP code:
@@ -183,7 +182,7 @@ Example usage in HTML/PHP code:
     </ul>
   <?php else: ?>
     <p role="status">
-      <?= i('This page does not contain any %s.', 'tags'); ?>
+      <?= i('This page does not have any %s.', 'tags'); ?>
     </p>
   <?php endif; ?>
 <?php endif; ?>

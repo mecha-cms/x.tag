@@ -1,8 +1,11 @@
 <?php
 
 return [
-    'chunk' => 5,
-    'deep' => 0,
-    'route' => '/tag',
-    'sort' => [1, 'title']
+    // Pre-defined page data
+    'page' => [
+        'chunk' => 5,
+        'deep' => 0,
+        'sort' => [1, 'title']
+    ],
+    'route' => '/tag'
 ];
