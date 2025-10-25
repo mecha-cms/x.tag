@@ -12,11 +12,8 @@ namespace {
 }
 
 namespace x\tag {
-    function page_tags(...$lot) {
-        if ($v = $this->__call('tags', $lot)) {
-            return $v instanceof \Tags ? $v : new \Tags($v);
-        }
-        if (!$path = $this->_exist()) {
+    function page_tags() {
+        if (!$path = $this->path) {
             return null;
         }
         if (!$kind = $this->kind) {
