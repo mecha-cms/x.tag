@@ -2,6 +2,14 @@
 
 class Tags extends Pages {
 
+    public function __toString(): string {
+        $tags = [];
+        foreach ($this->getIterator() as $v) {
+            $tags[] = $v->name;
+        }
+        return implode($this->join, $tags);
+    }
+
     public function page(...$lot) {
         return new Tag(...$lot);
     }
