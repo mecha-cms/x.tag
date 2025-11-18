@@ -94,7 +94,7 @@ namespace x\tag {
             ], 1)) {
                 \lot('page', $page = new \Page($file));
                 // For `/…/tag/:name/:part`
-                if ($name = \State::get('[x].query.tag') ?? "") {
+                if ($name = $state->q->tag ?? "") {
                     if (null === ($id = \From::tag($name))) {
                         return $content;
                     }
@@ -173,7 +173,7 @@ namespace x\tag {
             return $content;
         }
         // For `/tag/:name`, and `/tag/:name/:part`
-        if ($name = \State::get('[x].query.tag') ?? "") {
+        if ($name = $state->q->tag ?? "") {
             if (null === ($id = \From::tag($name))) {
                 return $content;
             }
@@ -266,7 +266,7 @@ namespace x\tag {
         ]);
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
-            \State::set('[x].query.tag', $v);
+            \State::set('q.tag', $v);
             $folder = \LOT . \D . 'tag' . \D . \strtr($v, '/', \D);
             if ($file = \exist([
                 $folder . '.archive',
@@ -299,11 +299,11 @@ namespace x\tag {
             if ($a && $part >= 0 && $r === $route) {
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
                 \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
-                \State::set('[x].query.tag', $v);
                 \State::set('is', [
                     'tag' => false,
                     'tags' => true
                 ]);
+                \State::set('q.tag', $v);
                 if ($file = \exist([
                     $folder . '.archive',
                     $folder . '.page'
