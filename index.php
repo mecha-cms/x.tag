@@ -46,10 +46,10 @@ namespace x\tag {
             return $content;
         }
         \extract(\lot(), \EXTR_SKIP);
-        $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
+        $route = \trim($state->x->tag->route ?? 'tag', '/');
         // For `/tag`
         if (!$part && $path === $route) {
             return $content;
@@ -80,11 +80,11 @@ namespace x\tag {
             return $content;
         }
         \extract(\lot(), \EXTR_SKIP);
-        $route = \trim($state->x->tag->route ?? 'tag', '/');
         if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
         $part = ($part ?? 0) - 1;
+        $route = \trim($state->x->tag->route ?? 'tag', '/');
         // For `/…/tag/:part`, and `/…/tag/:name/:part`
         if ($part >= 0 && $path) {
             $folder = \LOT . \D . 'page' . \D . $path;
@@ -94,7 +94,7 @@ namespace x\tag {
             ], 1)) {
                 \lot('page', $page = new \Page($file));
                 // For `/…/tag/:name/:part`
-                if ($name = $state->q->tag ?? "") {
+                if ($name = $state->q('tag.name')) {
                     if (null === ($id = \From::tag($name))) {
                         return $content;
                     }
@@ -173,7 +173,7 @@ namespace x\tag {
             return $content;
         }
         // For `/tag/:name`, and `/tag/:name/:part`
-        if ($name = $state->q->tag ?? "") {
+        if ($name = $state->q('tag.name')) {
             if (null === ($id = \From::tag($name))) {
                 return $content;
             }
@@ -260,13 +260,14 @@ namespace x\tag {
     if (0 === \strpos($path . '/', $route . '/')) {
         \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
         \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
-        \State::set('is', [
-            'tag' => $part < 0 && $path !== $route,
-            'tags' => $part >= 0
+        \State::set([
+            'is' => [
+                'tag' => $part < 0 && $path !== $route,
+                'tags' => $part >= 0
+            ]
         ]);
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
-            \State::set('q.tag', $v);
             $folder = \LOT . \D . 'tag' . \D . \strtr($v, '/', \D);
             if ($file = \exist([
                 $folder . '.archive',
@@ -274,6 +275,17 @@ namespace x\tag {
             ], 1)) {
                 \lot('tag', $tag = new \Tag($file));
             }
+            // A tag does not need to exist in order to declare route query data. Given the subjective nature of this
+            // method, it is up to the developer of the extension to keep track of the data for later use. It can then
+            // be used across the route since Mecha lacks a native mechanism to collect route information.
+            \State::set([
+                'q' => [
+                    'tag' => [
+                        'name' => $v,
+                        'part' => $part >= 0 ? $part + 1 : null
+                    ]
+                ]
+            ]);
         }
     } else {
         $a = \explode('/', $path);
@@ -287,23 +299,18 @@ namespace x\tag {
             ], 1)) {
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
                 \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
-                \State::set('is', [
+            }
+            \State::set([
+                'is' => [
                     'tag' => false,
                     'tags' => true
-                ]);
-            }
+                ]
+            ]);
         } else {
             $r = \array_pop($a);
             $folder = \LOT . \D . 'tag' . \D . $v;
             // For `/…/tag/:name/:part`
             if ($a && $part >= 0 && $r === $route) {
-                \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
-                \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
-                \State::set('is', [
-                    'tag' => false,
-                    'tags' => true
-                ]);
-                \State::set('q.tag', $v);
                 if ($file = \exist([
                     $folder . '.archive',
                     $folder . '.page'
@@ -316,6 +323,20 @@ namespace x\tag {
                         ], 1) ?: null
                     ]));
                 }
+                \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
+                \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
+                \State::set([
+                    'is' => [
+                        'tag' => false,
+                        'tags' => true
+                    ],
+                    'q' => [
+                        'tag' => [
+                            'name' => $v,
+                            'part' => $part + 1
+                        ]
+                    ]
+                ]);
             }
         }
     }
