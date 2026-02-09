@@ -25,7 +25,7 @@ namespace x\tag {
             if (!$v = \To::tag($k)) {
                 continue;
             }
-            $tags[$k] = [
+            $tags[$v] = [
                 'page' => $path,
                 'parent' => $parent,
                 'path' => \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . $x . '}', 1)
@@ -37,10 +37,18 @@ namespace x\tag {
         if (null !== $content) {
             return $content;
         }
-        \extract(\lot(), \EXTR_SKIP);
         if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
+        // A public path should not contain the `'` or `~` prefix
+        if (false !== \strpos('/' . $path, "/'") || false !== \strpos('/' . $path, '/~')) {
+            return [
+                'lot' => [],
+                'status' => 404,
+                'y' => 'page'
+            ];
+        }
+        \extract(\lot(), \EXTR_SKIP);
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         // For `/tag`
         if (!$part && $path === $route) {
@@ -57,7 +65,7 @@ namespace x\tag {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
             // For `/…/tag/:name/:part`
-            if ($route === \array_pop($a) && \exist(\LOT . \D . 'tag' . \D . $v . '.{' . \x\page\x() . '}', 1)) {
+            if ($route === \array_pop($a) && \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . \x\page\x() . '}', 1)) {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
         }
