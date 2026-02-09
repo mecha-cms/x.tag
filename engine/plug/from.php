@@ -8,16 +8,16 @@ From::_('tag', static function ($name) {
     if (isset($cache[$name])) {
         return $cache[$name];
     }
-    $folder = LOT . D . 'tag' . D . $name;
+    $folder = LOT . D . 'tag' . D . "{',}" . $name;
     // Get from external `id` data
-    if (is_file($file = $folder . D . 'id.data') && filesize($file) > 0) {
+    if ($file = exist($folder . D . '+' . D . 'id.{' . ($x = x\page\x()) . '}', 1)) {
+        if (0 === filesize($file)) {
+            return null;
+        }
         $id = trim((string) fgets(fopen($file, 'r')));
         return ($cache[$name] = is_numeric($id) ? (int) $id : $id);
     }
-    if ($file = exist([
-        $folder . '.archive',
-        $folder . '.page'
-    ], 1)) {
+    if ($file = exist($folder . '.{' . $x . '}', 1)) {
         // Get from internal `id` data
         if (null !== ($id = From::page(file_get_contents($file))->id ?? null)) {
             return ($cache[$name] = $id);

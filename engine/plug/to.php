@@ -8,16 +8,25 @@ To::_('tag', static function ($id) {
     if (isset($cache[$id])) {
         return $cache[$id];
     }
+    $folder = LOT . D . 'tag' . D . '*';
     // Search for external `id` data
-    foreach (glob(LOT . D . 'tag' . D . '*' . D . 'id.data', GLOB_NOSORT) as $v) {
+    foreach (glob($folder . D . '+' . D . 'id.{' . ($x = x\page\x()) . '}', GLOB_BRACE | GLOB_NOSORT) as $v) {
         if (is_file($v) && $id === (int) trim((string) fgets(fopen($v, 'r')))) {
-            return ($cache[$id] = basename(dirname($v)));
+            $name = basename(dirname($v, 2));
+            if ('~' === $name[0]) {
+                return null;
+            }
+            return ($cache[$id] = "'" === $name[0] ? substr($name, 1) : $name);
         }
     }
     // Search for internal `id` data
-    foreach (glob(LOT . D . 'tag' . D . '*.{archive,page}', GLOB_BRACE | GLOB_NOSORT) as $v) {
+    foreach (glob($folder . '.{' . $x . '}', GLOB_BRACE | GLOB_NOSORT) as $v) {
         if (is_file($v) && $id === (From::page(file_get_contents($v))->id ?? null)) {
-            return ($cache[$id] = pathinfo($v, PATHINFO_FILENAME));
+            $name = pathinfo($v, PATHINFO_FILENAME);
+            if ('~' === $name[0]) {
+                return null;
+            }
+            return ($cache[$id] = "'" === $name[0] ? substr($name, 1) : $name);
         }
     }
     return null;

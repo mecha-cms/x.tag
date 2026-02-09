@@ -6,10 +6,8 @@ class Tag extends Page {
         if (!$this->_exist()) {
             return null;
         }
-        if ($v = $this->offsetGet('page')) {
-            if (is_string($v) && is_file($v)) {
-                return new Page($v, $lot);
-            }
+        if (is_string($v = $this->offsetGet('page')) && is_file($v)) {
+            return new Page($v, $lot);
         }
         return null;
     }

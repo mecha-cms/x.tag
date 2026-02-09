@@ -1,11 +1,16 @@
 ---
 title: Tag
 description: Lists all pages in the current folder, filtered by tag.
-icon: 'M5.5,9A1.5,1.5 0 0,0 7,7.5A1.5,1.5 0 0,0 5.5,6A1.5,1.5 0 0,0 4,7.5A1.5,1.5 0 0,0 5.5,9M17.41,11.58C17.77,11.94 18,12.44 18,13C18,13.55 17.78,14.05 17.41,14.41L12.41,19.41C12.05,19.77 11.55,20 11,20C10.45,20 9.95,19.78 9.58,19.41L2.59,12.42C2.22,12.05 2,11.55 2,11V6C2,4.89 2.89,4 4,4H9C9.55,4 10.05,4.22 10.41,4.58L17.41,11.58M13.54,5.71L14.54,4.71L21.41,11.58C21.78,11.94 22,12.45 22,13C22,13.55 21.78,14.05 21.42,14.41L16.04,19.79L15.04,18.79L20.75,13L13.54,5.71Z'
+icon: >-
+  M5.5,9A1.5,1.5 0 0,0 7,7.5A1.5,1.5 0 0,0 5.5,6A1.5,1.5 0 0,0 4,7.5A1.5,1.5 0 0,0 5.5,9M17.41,11.58C17.77,11.94
+  18,12.44 18,13C18,13.55 17.78,14.05 17.41,14.41L12.41,19.41C12.05,19.77 11.55,20 11,20C10.45,20 9.95,19.78
+  9.58,19.41L2.59,12.42C2.22,12.05 2,11.55 2,11V6C2,4.89 2.89,4 4,4H9C9.55,4 10.05,4.22
+  10.41,4.58L17.41,11.58M13.54,5.71L14.54,4.71L21.41,11.58C21.78,11.94 22,12.45 22,13C22,13.55 21.78,14.05
+  21.42,14.41L16.04,19.79L15.04,18.79L20.75,13L13.54,5.71Z
 color: '#195fe7'
 author: Taufik Nurrohman
 type: Markdown
-version: 3.1.0
+version: 4.0.0
 ...
 
 This extension enables the tag filter feature by using the page’s `kind` property to add multiple routes, such as
@@ -15,7 +20,7 @@ This extension enables the tag filter feature by using the page’s `kind` prope
 still make this extension work without the GUI feature. Before we start, you need to know how this extension works.
 
 Writing a tag file is the same as writing a page file. The only difference is that you have to write the `id` property
-separately from the page. Be sure to specify a unique number for each `id.data` file. These numbers will then be used to
+separately from the page. Be sure to specify a unique number for each `id.json` file. These numbers will then be used to
 associate the tag file with the `kind` property on each page:
 
 ~~~ .txt
@@ -25,19 +30,22 @@ associate the tag file with the `kind` property on each page:
     │   └── …
     └── tag\
         ├── bar\
-        │   └── id.data ✔
+        │   └── +\
+        │       └── id.json ✔
         ├── baz\
-        │   └── id.data ✔
+        │   └── +\
+        │       └── id.json ✔
         ├── foo\
-        │   └── id.data ✔
-        ├── bar.page
-        ├── baz.page
-        └── foo.page
+        │   └── +\
+        │       └── id.json ✔
+        ├── bar.txt
+        ├── baz.txt
+        └── foo.txt
 ~~~
 
 Here’s an example of what a tag file might contain:
 
-~~~ .yaml
+~~~ .txt.yaml
 ---
 title: Tag Name
 description: Short description about this tag.
@@ -47,7 +55,7 @@ type: Markdown
 Long description about this tag.
 ~~~
 
-To associate tags with the current page, create a `kind.data` file in the relevant folder that contains a list of tag
+To associate tags with the current page, create a `kind.json` file in the relevant folder that contains a list of tag
 IDs written in a valid JSON format:
 
 ~~~ .txt
@@ -55,8 +63,9 @@ IDs written in a valid JSON format:
 └── lot\
     ├── page\
     │   ├── lorem-ipsum\
-    │   │   └── kind.data ✔
-    │   └── lorem-ipsum.page
+    │   │   └── +\
+    │   │       └── kind.json ✔
+    │   └── lorem-ipsum.txt
     └── tag\
         └── …
 ~~~
@@ -70,7 +79,7 @@ Example contents of a `kind.data` file:
 You can also include the `kind` property in the page header, but this method may not be performance efficient when
 reading the data:
 
-~~~ .yaml
+~~~ .txt.yaml
 ---
 title: Page Title
 description: Page description.

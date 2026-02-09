@@ -5,9 +5,10 @@ class Tags extends Pages {
     public function __toString(): string {
         $tags = [];
         foreach ($this->getIterator() as $v) {
-            $tags[] = $v->name;
+            $tags[$v->name] = 1;
         }
-        return implode($this->join, $tags);
+        ksort($tags);
+        return implode($this->join, array_keys($tags));
     }
 
     public function page(...$lot) {

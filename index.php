@@ -19,24 +19,16 @@ namespace x\tag {
         if (!$kind = $this->kind) {
             return null;
         }
-        $r = \dirname($path);
-        $parent = \exist([
-            $r . '.archive',
-            $r . '.page'
-        ], 1) ?: null;
+        $parent = \exist(\dirname($path) . '.{' . ($x = \x\page\x()) . '}', 1) ?: null;
         $tags = [];
         foreach ((array) $kind as $k) {
             if (!$v = \To::tag($k)) {
                 continue;
             }
-            $folder = \LOT . \D . 'tag' . \D . $v;
             $tags[$k] = [
                 'page' => $path,
                 'parent' => $parent,
-                'path' => \exist([
-                    $folder . '.archive',
-                    $folder . '.page'
-                ], 1)
+                'path' => \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . $x . '}', 1)
             ];
         }
         return new \Tags($tags);
@@ -65,11 +57,7 @@ namespace x\tag {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
             // For `/…/tag/:name/:part`
-            $folder = \LOT . \D . 'tag' . \D . $v;
-            if ($route === \array_pop($a) && \exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ], 1)) {
+            if ($route === \array_pop($a) && \exist(\LOT . \D . 'tag' . \D . $v . '.{' . \x\page\x() . '}', 1)) {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
         }
@@ -85,13 +73,10 @@ namespace x\tag {
         }
         $part = ($part ?? 0) - 1;
         $route = \trim($state->x->tag->route ?? 'tag', '/');
+        $x = \x\page\x();
         // For `/…/tag/:part`, and `/…/tag/:name/:part`
         if ($part >= 0 && $path) {
-            $folder = \LOT . \D . 'page' . \D . $path;
-            if ($file = \exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ], 1)) {
+            if ($file = \exist(\LOT . \D . 'page' . \D . $path . '.{' . $x . '}', 1)) {
                 \lot('page', $page = new \Page($file));
                 // For `/…/tag/:name/:part`
                 if ($name = $state->q('tag.name')) {
@@ -100,7 +85,7 @@ namespace x\tag {
                     }
                     $chunk = $tag->chunk ?? $page->chunk ?? 5;
                     $sort = \array_replace([1, 'path'], (array) ($page->sort ?? []), (array) ($tag->sort ?? []));
-                    $pages = $page->children('page', true)->is(function ($v) use ($id) {
+                    $pages = $page->children($x, true)->is(function ($v) use ($id) {
                         return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
                     })->sort($sort);
                     \lot('t')[] = $page->title;
@@ -123,13 +108,17 @@ namespace x\tag {
                         'is' => ['error' => 0 === $count ? 404 : false],
                         'with' => ['pages' => $count > 0]
                     ]);
-                    return ['pages/tag/' . $name, [], 0 === $count ? 404 : 200];
+                    return [
+                        'lot' => [],
+                        'status' => 0 === $count ? 404 : 200,
+                        'y' => 'pages/tag/' . $name
+                    ];
                 }
                 // For `/…/tag/:part`
                 $tags = [];
                 $chunk = $state->x->tag->page->chunk ?? $page->chunk ?? 5;
                 $sort = \array_replace([1, 'path'], (array) ($page->sort ?? []), (array) ($state->x->tag->page->sort ?? []));
-                if ($pages = $page->children('page', true)) {
+                if ($pages = $page->children($x, true)) {
                     foreach ($pages as $v) {
                         if (!$k = $v->kind) {
                             continue;
@@ -138,13 +127,9 @@ namespace x\tag {
                             if (!$kk = \To::tag($kk)) {
                                 continue;
                             }
-                            $folder = \LOT . \D . 'tag' . \D . $kk;
                             $tags[$kk] = [
                                 'parent' => $page->path,
-                                'path' => \exist([
-                                    $folder . '.archive',
-                                    $folder . '.page'
-                                ], 1)
+                                'path' => \exist(\LOT . \D . 'tag' . \D . "{',}" . $kk . '.{' . $x . '}', 1)
                             ];
                         }
                     }
@@ -168,7 +153,11 @@ namespace x\tag {
                     'is' => ['error' => 0 === $count ? 404 : false],
                     'with' => ['tags' => $count > 0]
                 ]);
-                return ['pages/tag', [], 0 === $count ? 404 : 200];
+                return [
+                    'lot' => [],
+                    'status' => 0 === $count ? 404 : 200,
+                    'y' => 'pages/tag'
+                ];
             }
             return $content;
         }
@@ -178,14 +167,10 @@ namespace x\tag {
                 return $content;
             }
             \lot('page', $tag);
-            $folder = \LOT . \D . 'tag' . \D . $name;
-            if ($file = \exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ], 1)) {
+            if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . $name . '.{' . $x . '}', 1)) {
                 $chunk = $tag->chunk ?? 5;
                 $sort = \array_replace([1, 'path'], (array) ($tag->sort ?? []));
-                $pages = \Pages::from(\LOT . \D . 'page' . ("" !== $path ? \D . $path : ""), 'page', true)->is(function ($v) use ($id) {
+                $pages = \Pages::from(\LOT . \D . 'page' . ("" !== $path ? \D . $path : ""), $x, true)->is(function ($v) use ($id) {
                     return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
                 })->sort($sort);
                 // For `/tag/:name`
@@ -193,7 +178,11 @@ namespace x\tag {
                     \lot('t')[] = \i('Tag');
                     \lot('t')[] = $tag->title;
                     \State::set('has.pages', \q($pages) > 0);
-                    return ['page/tag/' . $name, [], 200];
+                    return [
+                        'lot' => [],
+                        'status' => 200,
+                        'y' => 'page/tag/' . $name
+                    ];
                 }
                 // For `/tag/:name/:part`
                 \lot('t')[] = \i('Tag');
@@ -215,7 +204,11 @@ namespace x\tag {
                     'is' => ['error' => 0 === $count ? 404 : false],
                     'with' => ['pages' => $count > 0]
                 ]);
-                return ['pages/tag/' . $name, [], 0 === $count ? 404 : 200];
+                return [
+                    'lot' => [],
+                    'status' => 0 === $count ? 404 : 200,
+                    'y' => 'pages/tag/' . $name
+                ];
             }
             return $content;
         }
@@ -223,7 +216,7 @@ namespace x\tag {
         $deep = $state->x->tag->page->deep ?? 0;
         $sort = \array_replace([1, 'path'], (array) ($state->x->tag->page->sort ?? []));
         // For `/tag/:part`
-        $pages = \Tags::from(\LOT . \D . 'tag', 'page')->sort($sort);
+        $pages = \Tags::from(\LOT . \D . 'tag', $x)->sort($sort);
         $pager = \Pager::from($pages);
         $pager->hash = $hash;
         $pager->path = $route;
@@ -249,13 +242,18 @@ namespace x\tag {
             'is' => ['error' => 0 === $count ? 404 : false],
             'with' => ['tags' => $count > 0]
         ]);
-        return ['pages/tags', [], 0 === $count ? 404 : 200];
+        return [
+            'lot' => [],
+            'status' => 0 === $count ? 404 : 200,
+            'y' => 'pages/tags'
+        ];
     }
     if ($part = \x\page\part($path = \trim($url->path ?? "", '/'))) {
         $path = \substr($path, 0, -\strlen('/' . $part));
     }
     $part = ($part ?? 0) - 1;
     $route = \trim($state->x->tag->route ?? 'tag', '/');
+    $x = \x\page\x();
     // For `/tag/…`
     if (0 === \strpos($path . '/', $route . '/')) {
         \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
@@ -268,11 +266,7 @@ namespace x\tag {
         ]);
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
-            $folder = \LOT . \D . 'tag' . \D . \strtr($v, '/', \D);
-            if ($file = \exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ], 1)) {
+            if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . \strtr($v, '/', \D) . '.{' . $x . '}', 1)) {
                 \lot('tag', $tag = new \Tag($file));
             }
             // A tag does not need to exist in order to declare route query data. Given the subjective nature of this
@@ -292,11 +286,7 @@ namespace x\tag {
         $v = \array_pop($a);
         // For `/…/tag/:part`
         if ($a && $part >= 0 && $v === $route) {
-            $folder = \LOT . \D . 'page' . \D . \implode(\D, $a);
-            if (\exist([
-                $folder . '.archive',
-                $folder . '.page'
-            ], 1)) {
+            if (\exist(\LOT . \D . 'page' . \D . \implode(\D, $a) . '.{' . $x . '}', 1)) {
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
                 \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
             }
@@ -308,19 +298,11 @@ namespace x\tag {
             ]);
         } else {
             $r = \array_pop($a);
-            $folder = \LOT . \D . 'tag' . \D . $v;
             // For `/…/tag/:name/:part`
             if ($a && $part >= 0 && $r === $route) {
-                if ($file = \exist([
-                    $folder . '.archive',
-                    $folder . '.page'
-                ], 1)) {
-                    $folder = \LOT . \D . 'page' . \D . \implode(\D, $a);
+                if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . $x . '}', 1)) {
                     \lot('tag', new \Tag($file, [
-                        'parent' => \exist([
-                            $folder . '.archive',
-                            $folder . '.page'
-                        ], 1) ?: null
+                        'parent' => \exist(\LOT . \D . 'page' . \D . \implode(\D, $a) . '.{' . $x . '}', 1) ?: null
                     ]));
                 }
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
