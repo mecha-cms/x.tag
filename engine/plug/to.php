@@ -16,7 +16,7 @@ To::_('tag', static function ($id) {
             if ('~' === ($name[0] ?? 0)) {
                 return null;
             }
-            return ($cache[$id] = "'" === ($name[0] ?? 0) ? substr($name, 1) : $name);
+            return ($cache[$id] = '#' === ($name[0] ?? 0) ? substr($name, 1) : $name);
         }
     }
     // Search for internal `id` data
@@ -26,7 +26,7 @@ To::_('tag', static function ($id) {
             if ('~' === ($name[0] ?? 0)) {
                 return null;
             }
-            return ($cache[$id] = "'" === ($name[0] ?? 0) ? substr($name, 1) : $name);
+            return ($cache[$id] = '#' === ($name[0] ?? 0) ? substr($name, 1) : $name);
         }
     }
     return null;

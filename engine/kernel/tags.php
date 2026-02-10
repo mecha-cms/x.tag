@@ -5,11 +5,10 @@ class Tags extends Pages {
     public function __toString(): string {
         $tags = [];
         foreach ($this->getIterator() as $v) {
-            $n = $v->name;
-            if ('~' === ($n[0] ?? 0)) {
+            if (!is_string($n = $v->name)) {
                 continue;
             }
-            $tags["'" === ($n[0] ?? 0) ? substr($n, 1) : $n] = 1;
+            $tags[$n] = 1;
         }
         ksort($tags);
         return implode($this->join, array_keys($tags));

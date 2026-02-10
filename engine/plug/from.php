@@ -8,7 +8,7 @@ From::_('tag', static function ($name) {
     if (isset($cache[$name])) {
         return $cache[$name];
     }
-    $folder = LOT . D . 'tag' . D . "{',}" . $name;
+    $folder = LOT . D . 'tag' . D . '{#,}' . $name;
     // Get from external `id` data
     if ($file = exist($folder . D . '+' . D . 'id.{' . ($x = x\page\x()) . '}', 1)) {
         if (0 === filesize($file)) {

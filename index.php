@@ -28,7 +28,7 @@ namespace x\tag {
             $tags[$v] = [
                 'page' => $path,
                 'parent' => $parent,
-                'path' => \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . $x . '}', 1)
+                'path' => \exist(\LOT . \D . 'tag' . \D . '{#,}' . $v . '.{' . $x . '}', 1)
             ];
         }
         return new \Tags($tags);
@@ -40,7 +40,8 @@ namespace x\tag {
         if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
-        // A public path should not contain the `'` or `~` prefix
+        // No part of the path can start with a `#` or `~`
+        $test = '/' . \rawurldecode($path);
         if (false !== \strpos('/' . $path, "/'") || false !== \strpos('/' . $path, '/~')) {
             return [
                 'lot' => [],
@@ -65,7 +66,7 @@ namespace x\tag {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
             // For `/…/tag/:name/:part`
-            if ($route === \array_pop($a) && \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . \x\page\x() . '}', 1)) {
+            if ($route === \array_pop($a) && \exist(\LOT . \D . 'tag' . \D . '{#,}' . $v . '.{' . \x\page\x() . '}', 1)) {
                 return \Hook::fire('route.tag', [$content, ($a ? '/' . \implode('/', $a) : "") . '/' . $part, $query, $hash]);
             }
         }
@@ -137,7 +138,7 @@ namespace x\tag {
                             }
                             $tags[$kk] = [
                                 'parent' => $page->path,
-                                'path' => \exist(\LOT . \D . 'tag' . \D . "{',}" . $kk . '.{' . $x . '}', 1)
+                                'path' => \exist(\LOT . \D . 'tag' . \D . '{#,}' . $kk . '.{' . $x . '}', 1)
                             ];
                         }
                     }
@@ -175,7 +176,7 @@ namespace x\tag {
                 return $content;
             }
             \lot('page', $tag);
-            if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . $name . '.{' . $x . '}', 1)) {
+            if ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $name . '.{' . $x . '}', 1)) {
                 $chunk = $tag->chunk ?? 5;
                 $sort = \array_replace([1, 'path'], (array) ($tag->sort ?? []));
                 $pages = \Pages::from(\LOT . \D . 'page' . ("" !== $path ? \D . $path : ""), $x, true)->is(function ($v) use ($id) {
@@ -274,7 +275,7 @@ namespace x\tag {
         ]);
         // For `/tag/:name/…`
         if ("" !== ($v = \substr($path, \strlen($route) + 1))) {
-            if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . \strtr($v, '/', \D) . '.{' . $x . '}', 1)) {
+            if ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . \strtr($v, '/', \D) . '.{' . $x . '}', 1)) {
                 \lot('tag', $tag = new \Tag($file));
             }
             // A tag does not need to exist in order to declare route query data. Given the subjective nature of this
@@ -308,7 +309,7 @@ namespace x\tag {
             $r = \array_pop($a);
             // For `/…/tag/:name/:part`
             if ($a && $part >= 0 && $r === $route) {
-                if ($file = \exist(\LOT . \D . 'tag' . \D . "{',}" . $v . '.{' . $x . '}', 1)) {
+                if ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $v . '.{' . $x . '}', 1)) {
                     \lot('tag', new \Tag($file, [
                         'parent' => \exist(\LOT . \D . 'page' . \D . \implode(\D, $a) . '.{' . $x . '}', 1) ?: null
                     ]));

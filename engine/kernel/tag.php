@@ -14,13 +14,12 @@ class Tag extends Page {
 
     public function route(...$lot) {
         if (0 === strpos($this->path ?? D, LOT . D . 'tag' . D)) {
-            $name = $this->name;
-            if ('~' === ($name[0] ?? 0)) {
+            if (!is_string($name = $this->name())) {
                 return null;
             }
             extract(lot(), EXTR_SKIP);
             $parent = $this->parent;
-            return ($parent ? $parent->route : "") . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . ("'" === ($name[0] ?? 0) ? substr($name, 1) : $name) . ($parent ? '/1' : "");
+            return ($parent ? $parent->route : "") . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . ($parent ? '/1' : "");
         }
         return parent::route(...$lot);
     }
