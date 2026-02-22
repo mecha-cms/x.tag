@@ -257,7 +257,7 @@ namespace x\tag {
             'y' => 'pages/tags'
         ];
     }
-    if ($part = \x\page\part($path = \trim($url->path ?? "", '/'))) {
+    if ($part = \x\page\part($path = \trim($link->path ?? "", '/'))) {
         $path = \substr($path, 0, -\strlen('/' . $part));
     }
     $part = ($part ?? 0) - 1;
