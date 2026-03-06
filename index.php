@@ -80,11 +80,11 @@ namespace x\tag {
         if ($part = \x\page\part($path = \trim($path ?? "", '/'))) {
             $path = \substr($path, 0, -\strlen('/' . $part));
         }
-        $part = ($part ?? 0) - 1;
+        $at = ($part ?? 0) - 1;
         $route = \trim($state->x->tag->route ?? 'tag', '/');
         $x = \x\page\x();
         // For `/…/tag/:part`, and `/…/tag/:name/:part`
-        if ($part >= 0 && $path) {
+        if ($at >= 0 && $path) {
             if ($file = \exist(\LOT . \D . 'page' . \D . \rawurldecode($path) . '.{' . $x . '}', 1)) {
                 \lot('page', $page = new \Page($file));
                 // For `/…/tag/:name/:part`
@@ -103,8 +103,8 @@ namespace x\tag {
                     \lot('t')[] = \i('Pages');
                     $pager = \Pager::from($pages);
                     $pager->path = $path . '/' . $route . '/' . $name;
-                    \lot('pager', $pager = $pager->chunk($chunk, $part));
-                    \lot('pages', $pages = $pages->chunk($chunk, $part));
+                    \lot('pager', $pager = $pager->chunk($chunk, $at));
+                    \lot('pages', $pages = $pages->chunk($chunk, $at));
                     if (0 === ($count = \q($pages))) {
                         \lot('t')[] = \i('Error');
                     }
@@ -148,8 +148,8 @@ namespace x\tag {
                 \lot('t')[] = \i('Tags');
                 $pager = \Pager::from($tags);
                 $pager->path = $path . '/' . $route;
-                \lot('pager', $pager = $pager->chunk($chunk, $part));
-                \lot('pages', $tags = $tags->chunk($chunk, $part));
+                \lot('pager', $pager = $pager->chunk($chunk, $at));
+                \lot('pages', $tags = $tags->chunk($chunk, $at));
                 if (0 === ($count = \q($tags))) {
                     \lot('t')[] = \i('Error');
                 }
@@ -183,7 +183,7 @@ namespace x\tag {
                     return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
                 })->sort($sort);
                 // For `/tag/:name`
-                if ($part < 0) {
+                if ($at < 0) {
                     \lot('t')[] = \i('Tag');
                     \lot('t')[] = $tag->title;
                     \State::set('has.pages', \q($pages) > 0);
@@ -199,8 +199,8 @@ namespace x\tag {
                 \lot('t')[] = \i('Pages');
                 $pager = \Pager::from($pages);
                 $pager->path = $path . '/' . $route . '/' . $name;
-                \lot('pager', $pager = $pager->chunk($chunk, $part));
-                \lot('pages', $pages = $pages->chunk($chunk, $part));
+                \lot('pager', $pager = $pager->chunk($chunk, $at));
+                \lot('pages', $pages = $pages->chunk($chunk, $at));
                 if (0 === ($count = \q($pages))) {
                     \lot('t')[] = \i('Error');
                 }
@@ -236,8 +236,8 @@ namespace x\tag {
             'title' => \i('Tags'),
             'type' => 'HTML'
         ]));
-        \lot('pager', $pager = $pager->chunk($chunk, $part));
-        \lot('pages', $pages = $pages->chunk($chunk, $part));
+        \lot('pager', $pager = $pager->chunk($chunk, $at));
+        \lot('pages', $pages = $pages->chunk($chunk, $at));
         \lot('t')[] = $page->title;
         if (0 === ($count = \q($pages))) {
             \lot('t')[] = \i('Error');
@@ -260,7 +260,7 @@ namespace x\tag {
     if ($part = \x\page\part($path = \trim($link->path ?? "", '/'))) {
         $path = \substr($path, 0, -\strlen('/' . $part));
     }
-    $part = ($part ?? 0) - 1;
+    $at = ($part ?? 0) - 1;
     $route = \trim($state->x->tag->route ?? 'tag', '/');
     $x = \x\page\x();
     // For `/tag/…`
@@ -269,8 +269,8 @@ namespace x\tag {
         \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
         \State::set([
             'is' => [
-                'tag' => $part < 0 && $path !== $route,
-                'tags' => $part >= 0
+                'tag' => $at < 0 && $path !== $route,
+                'tags' => $at >= 0
             ]
         ]);
         // For `/tag/:name/…`
@@ -285,7 +285,7 @@ namespace x\tag {
                 'q' => [
                     'tag' => [
                         'name' => $v,
-                        'part' => $part >= 0 ? $part + 1 : null
+                        'part' => $at >= 0 ? $part : null
                     ]
                 ]
             ]);
@@ -294,7 +294,7 @@ namespace x\tag {
         $a = \explode('/', $path);
         $v = \array_pop($a);
         // For `/…/tag/:part`
-        if ($a && $part >= 0 && $v === $route) {
+        if ($a && $at >= 0 && $v === $route) {
             if (\exist(\LOT . \D . 'page' . \D . \rawurldecode(\implode(\D, $a)) . '.{' . $x . '}', 1)) {
                 \Hook::set('route.page', __NAMESPACE__ . "\\route__page", 90);
                 \Hook::set('route.tag', __NAMESPACE__ . "\\route__tag", 100);
@@ -308,7 +308,7 @@ namespace x\tag {
         } else {
             $r = \array_pop($a);
             // For `/…/tag/:name/:part`
-            if ($a && $part >= 0 && $r === $route) {
+            if ($a && $at >= 0 && $r === $route) {
                 if ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . \rawurldecode($v) . '.{' . $x . '}', 1)) {
                     \lot('tag', new \Tag($file, [
                         'parent' => \exist(\LOT . \D . 'page' . \D . \rawurldecode(\implode(\D, $a)) . '.{' . $x . '}', 1) ?: null
@@ -324,7 +324,7 @@ namespace x\tag {
                     'q' => [
                         'tag' => [
                             'name' => $v,
-                            'part' => $part + 1
+                            'part' => $part
                         ]
                     ]
                 ]);
