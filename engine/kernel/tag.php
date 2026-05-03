@@ -19,7 +19,7 @@ class Tag extends Page {
             }
             extract(lot(), EXTR_SKIP);
             $parent = $this->parent;
-            return ($parent ? $parent->route : "") . '/' . trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . ($parent ? '/1' : "");
+            return ($parent ? $parent->route : "") . '/' . strtr(rawurlencode(trim($state->x->tag->route ?? 'tag', '/') . '/' . $name . ($parent ? '/1' : "")), ['%2F' => '/']);
         }
         return parent::route(...$lot);
     }
