@@ -6,5 +6,5 @@ return [
         'deep' => 0,
         'sort' => [1, 'title']
     ],
-    'route' => '/tag'
+    'sub' => '/tag'
 ];
