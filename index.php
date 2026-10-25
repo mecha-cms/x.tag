@@ -21,12 +21,8 @@ namespace x\tag {
         }
         // No part of the path can start with a `#` or `~`
         $test = '/' . \rawurldecode($path);
-        if (false !== \strpos('/' . $path, "/'") || false !== \strpos('/' . $path, '/~')) {
-            return [
-                'lot' => [],
-                'status' => 404,
-                'y' => 'page'
-            ];
+        if (false !== \strpos('/' . $path, '/#') || false !== \strpos('/' . $path, '/~')) {
+            return [404, []];
         }
         \extract(\lot(), \EXTR_SKIP);
         $sub = \trim($state->x->tag->sub ?? 'tag', '/');
@@ -104,11 +100,7 @@ namespace x\tag {
                         'is' => ['error' => 0 === $count ? 404 : false],
                         'with' => ['pages' => $count > 0]
                     ]);
-                    return [
-                        'lot' => [],
-                        'status' => 0 === $count ? 404 : 200,
-                        'y' => 'pages/tag/' . $name
-                    ];
+                    return [0 === $count ? 404 : 200, []];
                 }
                 // For `/…/tag/:part`
                 $tags = [];
@@ -158,11 +150,7 @@ namespace x\tag {
                     'is' => ['error' => 0 === $count ? 404 : false],
                     'with' => ['tags' => $count > 0]
                 ]);
-                return [
-                    'lot' => [],
-                    'status' => 0 === $count ? 404 : 200,
-                    'y' => 'pages/tag'
-                ];
+                return [0 === $count ? 404 : 200, []];
             }
             return $content;
         }
@@ -191,11 +179,7 @@ namespace x\tag {
                     \lot('t')[] = \i('Tag');
                     \lot('t')[] = $tag->title;
                     \State::set('has.pages', \q($pages) > 0);
-                    return [
-                        'lot' => [],
-                        'status' => 200,
-                        'y' => 'page/tag/' . $name
-                    ];
+                    return [200, []];
                 }
                 // For `/tag/:name/:part`
                 \lot('t')[] = \i('Tag');
@@ -217,11 +201,7 @@ namespace x\tag {
                     'is' => ['error' => 0 === $count ? 404 : false],
                     'with' => ['pages' => $count > 0]
                 ]);
-                return [
-                    'lot' => [],
-                    'status' => 0 === $count ? 404 : 200,
-                    'y' => 'pages/tag/' . $name
-                ];
+                return [0 === $count ? 404 : 200, []];
             }
             return $content;
         }
@@ -255,11 +235,7 @@ namespace x\tag {
             'is' => ['error' => 0 === $count ? 404 : false],
             'with' => ['tags' => $count > 0]
         ]);
-        return [
-            'lot' => [],
-            'status' => 0 === $count ? 404 : 200,
-            'y' => 'pages/tags'
-        ];
+        return [0 === $count ? 404 : 200, []];
     }
     if ($part = \x\page\part($path = \trim($link->path ?? "", '/'))) {
         $path = \substr($path, 0, -\strlen('/' . $part));
@@ -346,11 +322,11 @@ namespace x\tag {
         $parent = \exist(\dirname($path) . '.{' . ($x = \x\page\x()) . '}', 1) ?: null;
         foreach ((array) $tags as $tag) {
             // Get tag by name
-            if (\is_string($tag) && ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $tag . '.{' . $x . '}', 1))) {
+            if (\is_string($tag) && ($f = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $tag . '.{' . $x . '}', 1))) {
                 $lot[$tag] = [
                     'page' => $path,
                     'parent' => $parent,
-                    'path' => $file
+                    'path' => $f
                 ];
                 continue;
             }
