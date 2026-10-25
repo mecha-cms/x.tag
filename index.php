@@ -12,27 +12,6 @@ namespace {
 }
 
 namespace x\tag {
-    function page_tags() {
-        if (!$path = $this->path) {
-            return null;
-        }
-        if (!$kind = $this->kind) {
-            return null;
-        }
-        $parent = \exist(\dirname($path) . '.{' . ($x = \x\page\x()) . '}', 1) ?: null;
-        $tags = [];
-        foreach ((array) $kind as $k) {
-            if (!$v = \To::tag($k)) {
-                continue;
-            }
-            $tags[$v] = [
-                'page' => $path,
-                'parent' => $parent,
-                'path' => \exist(\LOT . \D . 'tag' . \D . '{#,}' . $v . '.{' . $x . '}', 1)
-            ];
-        }
-        return new \Tags($tags);
-    }
     function route__page($content, $path, $query, $hash) {
         if (null !== $content) {
             return $content;
@@ -95,7 +74,15 @@ namespace x\tag {
                     $chunk = $tag->chunk ?? $page->chunk ?? 5;
                     $sort = \array_replace([1, 'path'], (array) ($page->sort ?? []), (array) ($tag->sort ?? []));
                     $pages = $page->children($x, true)->is(function ($v) use ($id) {
-                        return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
+                        if (!$tags = $v->tags) {
+                            return false;
+                        }
+                        foreach ($tags as $tag) {
+                            if ($id === $tag->id) {
+                                return true;
+                            }
+                        }
+                        return false;
                     })->sort($sort);
                     \lot('t')[] = $page->title;
                     \lot('t')[] = \i('Tag');
@@ -129,10 +116,19 @@ namespace x\tag {
                 $sort = \array_replace([1, 'path'], (array) ($page->sort ?? []), (array) ($state->x->tag->page->sort ?? []));
                 if ($pages = $page->children($x, true)) {
                     foreach ($pages as $v) {
-                        if (!$k = $v->kind) {
+                        if (!$k = $v->tags) {
                             continue;
                         }
                         foreach ((array) $k as $kk) {
+                            // Get tag by name
+                            if (\is_string($kk) && ($f = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $kk . '.{' . $x . '}', 1))) {
+                                $tags[$kk] = [
+                                    'parent' => $page->path,
+                                    'path' => $f
+                                ];
+                                continue;
+                            }
+                            // Get tag by ID
                             if (!$kk = \To::tag($kk)) {
                                 continue;
                             }
@@ -180,7 +176,15 @@ namespace x\tag {
                 $chunk = $tag->chunk ?? 5;
                 $sort = \array_replace([1, 'path'], (array) ($tag->sort ?? []));
                 $pages = \Pages::from(\LOT . \D . 'page' . \rawurldecode("" !== $path ? \D . $path : ""), $x, true)->is(function ($v) use ($id) {
-                    return false !== \strpos(',' . \implode(',', (array) $v->kind) . ',', ',' . $id . ',');
+                    if (!$tags = $v->tags) {
+                        return false;
+                    }
+                    foreach ($tags as $tag) {
+                        if ($id === $tag->id) {
+                            return true;
+                        }
+                    }
+                    return false;
                 })->sort($sort);
                 // For `/tag/:name`
                 if ($at < 0) {
@@ -331,5 +335,35 @@ namespace x\tag {
             }
         }
     }
-    \Page::_('tags', __NAMESPACE__ . "\\page_tags");
+    \Page::_('tags', function () {
+        if (!$path = $this->path) {
+            return null;
+        }
+        if (!$tags = $this->offsetGet('tags')) {
+            return null;
+        }
+        $lot = [];
+        $parent = \exist(\dirname($path) . '.{' . ($x = \x\page\x()) . '}', 1) ?: null;
+        foreach ((array) $tags as $tag) {
+            // Get tag by name
+            if (\is_string($tag) && ($file = \exist(\LOT . \D . 'tag' . \D . '{#,}' . $tag . '.{' . $x . '}', 1))) {
+                $lot[$tag] = [
+                    'page' => $path,
+                    'parent' => $parent,
+                    'path' => $file
+                ];
+                continue;
+            }
+            // Get tag by ID
+            if (!$tag = \To::tag($tag)) {
+                continue;
+            }
+            $lot[$tag] = [
+                'page' => $path,
+                'parent' => $parent,
+                'path' => \exist(\LOT . \D . 'tag' . \D . '{#,}' . $tag . '.{' . $x . '}', 1)
+            ];
+        }
+        return new \Tags($lot);
+    });
 }
